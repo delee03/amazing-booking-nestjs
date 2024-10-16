@@ -1,12 +1,6 @@
-import {
-  Injectable,
-  OnModuleInit,
-  INestApplication,
-  Global,
-} from '@nestjs/common';
+import { Injectable, OnModuleInit, INestApplication } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 
-@Global() // Thêm @Global() để biến PrismaService thành một provider toàn cục
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
   async onModuleInit() {
@@ -14,6 +8,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
   }
 
   async enableShutdownHooks(app: INestApplication) {
+    // @ts-ignore
     this.$on('beforeExit', async () => {
       await app.close();
     });
