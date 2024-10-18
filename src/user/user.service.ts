@@ -33,7 +33,7 @@ export class UserService {
 
   // Cập nhật thông tin người dùng
   async update(id: string, updateUserDto: UpdateUserDto) {
-    return this.prisma.user.update({
+    const user = this.prisma.user.update({
       where: { id },
       // data: updateUserDto,
       data: {
@@ -46,6 +46,11 @@ export class UserService {
         // bookings và ratings cũng không cần nếu không có sự thay đổi.
       },
     });
+    return {
+      statusCode: 200,
+      message: `User with ID ${id} has been successfully updated.`,
+      content: [user],
+    };
   }
 
   // Xóa một người dùng

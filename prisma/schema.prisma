@@ -33,6 +33,7 @@ model Room {
   soKhach     Int
   tienNghi    String
   price       Float
+  avatar       String
   location    Location @relation(fields: [locationId], references: [id])
   locationId  String   @db.ObjectId
   bookings    Booking[]
@@ -40,18 +41,15 @@ model Room {
   ratings     Rating[]
 }
 
-
 model Location {
   id String @id @default(auto()) @map("_id") @db.ObjectId
   city String
   style String?
   country String
-  longitude Float?
-  latitude Float?
+  longitude String?
+  latitude String?
   rooms Room[]
 }
-
-
 
 model RoomImage {
   id      String @id @default(auto()) @map("_id") @db.ObjectId
