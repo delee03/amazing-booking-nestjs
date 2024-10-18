@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../Prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UploadAvatarDto } from './dto/uploadavatar-user.dto';
+import { s3 } from 'spaces.config';
 
 @Injectable()
 export class UserService {
@@ -12,6 +14,30 @@ export class UserService {
     return this.prisma.user.create({
       data: createUserDto,
     });
+  }
+
+  //upload avatar
+  async updateAvatar(id: string, file: Express.Multer.File) {
+    const uploadParams = {
+      Bucket: 'user-avatar', // Tên của Space mà bạn đã tạo
+      Key: `${id}-${Date.now()}.${file.mimetype.split('/')[1]}`, // Tạo tên file duy nhất
+      Body: file.buffer,
+      ACL: 'public-read', // Đặt quyền truy cập công khai nếu cần
+    };
+
+    try {
+      // Upload file lên Space DigitalOcean
+      const data = await s3.upload(uploadParams).promise();
+      const avatarUrl = data.Location;
+
+      // Cập nhật URL avatar trong cơ sở dữ liệu
+      return this.prisma.user.update({
+        where: { id },
+        data: { avatar: avatarUrl },
+      });
+    } catch (err) {
+      throw new Error(`Failed to upload avatar: ${err.message}`);
+    }
   }
 
   // Lấy danh sách tất cả người dùng

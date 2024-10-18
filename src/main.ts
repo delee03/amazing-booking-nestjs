@@ -1,10 +1,11 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as dotenv from 'dotenv';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
+  dotenv.config(); // Đọc file .env
   // Cấu hình Swagger
   const config = new DocumentBuilder()
     .setTitle('Hotel Booking API')

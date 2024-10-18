@@ -7,11 +7,22 @@ import {
   Param,
   Delete,
   Put,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
+
+import { FileInterceptor } from '@nestjs/platform-express';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { UploadAvatarDto } from './dto/uploadavatar-user.dto';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiConsumes,
+} from '@nestjs/swagger';
+// Removed unused import for Multer
 
 @ApiTags('users')
 @Controller('users')
@@ -63,5 +74,17 @@ export class UserController {
   })
   remove(@Param('id') id: string) {
     return this.userService.remove(id);
+  }
+
+  @Post(':id/avatar')
+  @ApiOperation({ summary: 'Upload an avatar for a user' })
+  @ApiConsumes('multipart/form-data') // Xác định kiểu dữ liệu là multipart/form-data
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadAvatar(
+    @Param('id') id: string,
+    @UploadedFile() file: Express.Multer.File,
+    @Body() body: UploadAvatarDto,
+  ) {
+    return this.userService.updateAvatar(id, file);
   }
 }
