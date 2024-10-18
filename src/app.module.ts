@@ -5,8 +5,19 @@ import { UserModule } from './user/user.module';
 import { PrismaService } from './Prisma/prisma.service';
 
 import { LocationModule } from './location/location.module';
+import { RoomModule } from './room/room.module';
+import { RoomImageModule } from './room-image/room-image.module';
+import { MulterModule } from '@nestjs/platform-express';
 @Module({
-  imports: [UserModule, LocationModule],
+  imports: [
+    UserModule,
+    LocationModule,
+    RoomModule,
+    RoomImageModule,
+    // MulterModule.register({
+    //   dest: './uploads', // Thư mục tạm trước khi upload lên DigitalOcean
+    // }),
+  ],
   controllers: [AppController],
   providers: [PrismaService, AppService],
   exports: [PrismaService],
