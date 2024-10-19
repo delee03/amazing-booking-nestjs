@@ -19,7 +19,7 @@ model User {
   email    String    @unique
   password String
   avatar   String? // Trường avatar (dạng URL) có thể null
-  birthday DateTime // Thêm trường birthday
+  birthday DateTime? // Thêm trường birthday
   gender   Boolean // Thêm trường gender
   phone    String // Thêm trường phone
   role     Role      @default(USER)

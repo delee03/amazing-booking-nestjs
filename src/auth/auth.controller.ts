@@ -32,7 +32,7 @@ export class AuthController {
   }
 
   @Post('signup')
-  async signUp(@Body() SignUpDto) {
+  async signUp(@Body() SignUpDto: SignUpDto) {
     return this.authService.signUp(SignUpDto);
   }
 

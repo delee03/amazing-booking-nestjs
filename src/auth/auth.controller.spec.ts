@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { SignInDto } from './dto/auth.dto';
+import { SignInDto } from './dto/sign-in.dto';
 
 
 describe('AuthController', () => {
