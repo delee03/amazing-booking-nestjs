@@ -8,12 +8,14 @@ import { LocationModule } from './location/location.module';
 import { RoomModule } from './room/room.module';
 import { RoomImageModule } from './room-image/room-image.module';
 import { MulterModule } from '@nestjs/platform-express';
+import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [
     UserModule,
     LocationModule,
     RoomModule,
     RoomImageModule,
+    AuthModule,
     // MulterModule.register({
     //   dest: './uploads', // Thư mục tạm trước khi upload lên DigitalOcean
     // }),
