@@ -11,18 +11,29 @@ export class UserService {
 
   // Tạo user mới
   async create(createUserDto: CreateUserDto) {
+    const { birthday, ...rest } = createUserDto;
+    let formattedBirthday: Date | null = null;
+
+    if (birthday) {
+      const [day, month, year] = birthday.split('/');
+      formattedBirthday = new Date(`${day}-${month}-${year}`);
+    }
+
     return this.prisma.user.create({
-      data: createUserDto,
+      data: {
+        ...rest,
+        birthday: formattedBirthday,
+      },
     });
   }
 
   //upload avatar
   async updateAvatar(id: string, file: Express.Multer.File) {
     const uploadParams = {
-      Bucket: 'user-avatar', // Tên của Space mà bạn đã tạo
+      Bucket: 'user-avatar', // Tên của Space đã tạo
       Key: `${id}-${Date.now()}.${file.mimetype.split('/')[1]}`, // Tạo tên file duy nhất
       Body: file.buffer,
-      ACL: 'public-read', // Đặt quyền truy cập công khai nếu cần
+      ACL: 'public-read', //  quyền truy cập công khai
     };
 
     try {

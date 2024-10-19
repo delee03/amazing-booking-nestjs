@@ -19,6 +19,9 @@ model User {
   name     String
   email    String  @unique
   password String
+  birthday DateTime?
+  gender   Boolean
+  phone    String
   avatar   String? // Trường avatar (dạng URL) có thể null
   role     Role    @default(USER)
   bookings Booking[]

@@ -42,20 +42,20 @@ export class AuthController {
 
   @Post('signup')
   async signUp(@Body() signUpDto: SignUpDto) {
-    return this.authService.signUp(SignUpDto);
+    return this.authService.signUp(signUpDto);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Get('profile')
-  getProfile(@Req() req: Request) {
-    return req.user;
-  }
+  //   @UseGuards(JwtAuthGuard)
+  //   @Get('profile')
+  //   getProfile(@Req() req: Request) {
+  //     return req.user;
+  //   }
 
-  @Get('status')
-  @UseGuards(JwtAuthGuard)
-  status(@Req() req: Request) {
-    console.log('Inside AuthController status method');
-    console.log(req.user);
-    return req.user;
-  }
+  //   @Get('status')
+  //   @UseGuards(JwtAuthGuard)
+  //   status(@Req() req: Request) {
+  //     console.log('Inside AuthController status method');
+  //     console.log(req.user);
+  //     return req.user;
+  //   }
 }

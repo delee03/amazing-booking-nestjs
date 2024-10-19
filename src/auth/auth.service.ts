@@ -1,8 +1,8 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Logger } from 'winston';
-import { JwtPayload } from './interfaces/jwt-payload.interface';
-import { AuthException } from './exceptions/auth.exception';
+import { JwtPayload } from './interface/jwt-payload.interface';
+import { AuthException } from './exception/auth.exception';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../Prisma/prisma.service';
 import { Role, User } from '@prisma/client';
@@ -47,9 +47,7 @@ export class AuthService {
     }
   }
 
-  async signIn(
-    signInDto: SignInDto,
-  ): Promise<{
+  async signIn(signInDto: SignInDto): Promise<{
     statusCode: number;
     content: any;
     token: string;
