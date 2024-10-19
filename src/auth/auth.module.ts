@@ -8,6 +8,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { PrismaModule } from '../Prisma/prisma.module';
+import { PrismaService } from 'src/Prisma/prisma.service';
 
 
 @Module({
