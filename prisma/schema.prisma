@@ -71,6 +71,8 @@ model Booking {
   userId    String   @db.ObjectId
   room      Room     @relation(fields: [roomId], references: [id])
   roomId    String   @db.ObjectId
+   paymentMethod  PaymentMethod  // Phương thức thanh toán
+  paymentStatus  Boolean 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -90,5 +92,14 @@ enum Role {
   USER
   ADMIN
 
+}
+
+enum PaymentMethod {
+  CREDIT_CARD
+  MOMO
+  VNPAY
+  PAYPAL
+  BANK_TRANSFER
+  OTHER
 }
 

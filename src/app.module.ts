@@ -10,6 +10,7 @@ import { RoomImageModule } from './room-image/room-image.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { AuthModule } from './auth/auth.module';
 import { BookingModule } from './booking/booking.module';
+import { RatingModule } from './rating/rating.module';
 @Module({
   imports: [
     UserModule,
@@ -18,6 +19,7 @@ import { BookingModule } from './booking/booking.module';
     RoomImageModule,
     AuthModule,
     BookingModule,
+    RatingModule,
     // MulterModule.register({
     //   dest: './uploads', // Thư mục tạm trước khi upload lên DigitalOcean
     // }),

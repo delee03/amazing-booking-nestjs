@@ -1,5 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsNumber, IsString } from 'class-validator';
+import {
+  IsDateString,
+  IsNumber,
+  IsString,
+  IsEnum,
+  IsBoolean,
+} from 'class-validator';
+import { PaymentMethod } from '@prisma/client'; // Import enum từ Prisma
 
 export class CreateBookingDto {
   @ApiProperty({ description: 'Check-in date' })
@@ -25,4 +32,12 @@ export class CreateBookingDto {
   @ApiProperty({ description: 'Number of guests' }) // Thêm trường guest
   @IsNumber()
   guests: number;
+
+  @ApiProperty({ description: 'Payment method', enum: PaymentMethod })
+  @IsEnum(PaymentMethod) // Sử dụng enum đúng từ Prisma
+  paymentMethod: PaymentMethod;
+
+  @ApiProperty({ description: 'Payment status' })
+  @IsBoolean()
+  paymentStatus: boolean;
 }
