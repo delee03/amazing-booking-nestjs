@@ -9,6 +9,7 @@ import {
   Put,
   UploadedFile,
   UseInterceptors,
+  Query,
 } from '@nestjs/common';
 
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -86,5 +87,26 @@ export class UserController {
     @Body() body: UploadAvatarDto,
   ) {
     return this.userService.updateAvatar(id, file);
+  }
+
+  @Get('/user-pagination')
+  @ApiOperation({ summary: 'Get all users with pagination' })
+  async findAllPagination(
+    @Query('pageIndex') pageIndex: string,
+    @Query('pageTake') pageTake: string,
+  ) {
+    try {
+      const pageIndexNumber = parseInt(pageIndex) || 1;
+      const pageTakeNumber = parseInt(pageTake) || 10;
+      return await this.userService.findAllPagination(
+        pageIndexNumber,
+        pageTakeNumber,
+      );
+    } catch (error) {
+      return {
+        statusCode: 500,
+        message: `Failed to paginate users: ${error.message}`,
+      };
+    }
   }
 }

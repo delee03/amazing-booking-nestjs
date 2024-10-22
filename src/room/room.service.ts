@@ -19,6 +19,39 @@ export class RoomService {
     });
   }
 
+  // Lấy danh sách phòng với phân trang dựa trên pageIndex và pageTake
+  async findAllPagination(pageIndex: number, pageTake: number) {
+    // Tính toán giá trị skip
+    const skip = (pageIndex - 1) * pageTake;
+
+    // Lấy rooms với skip và take
+    const rooms = await this.prisma.room.findMany({
+      skip: skip, // Bỏ qua các phần tử đã tính toán
+      take: pageTake, // Lấy số phần tử tương ứng với pageTake
+      include: {
+        location: true,
+        bookings: true,
+        images: true,
+        ratings: true,
+      },
+    });
+
+    // Tổng số phòng (dùng để tính số trang)
+    const totalCount = await this.prisma.room.count();
+
+    // Tính số trang
+    const pageCount = Math.ceil(totalCount / pageTake);
+
+    return {
+      statusCode: 200,
+      message: 'Rooms retrieved successfully with pagination',
+      content: rooms,
+      pageCurrent: pageIndex, // Trang hiện tại
+      pageCount: pageCount, // Tổng số trang
+      totalCount: totalCount, // Tổng số lượng phòng
+    };
+  }
+
   //   async create(createRoomDto: CreateRoomDto) {
   //     return this.prisma.room.create({
   //       data: createRoomDto,

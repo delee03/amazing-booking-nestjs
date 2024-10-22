@@ -91,7 +91,6 @@ model Rating {
 enum Role {
   USER
   ADMIN
-
 }
 
 enum PaymentMethod {

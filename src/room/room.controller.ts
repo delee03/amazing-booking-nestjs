@@ -9,6 +9,7 @@ import {
   UseInterceptors,
   Put,
   UploadedFile,
+  Query,
 } from '@nestjs/common';
 import { RoomService } from './room.service';
 import { CreateRoomDto } from './dto/create-room.dto';
@@ -30,26 +31,26 @@ export class RoomController {
 
   @Get()
   @ApiOperation({ summary: 'Get all rooms' })
-  findAll() {
-    return this.roomService.findAll();
+  async findAll() {
+    return await this.roomService.findAll();
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get room by ID' })
-  findOne(@Param('id') id: string) {
-    return this.roomService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    return await this.roomService.findOne(id);
   }
 
   @Put(':id')
   @ApiOperation({ summary: 'Update room by ID' })
-  update(@Param('id') id: string, @Body() updateRoomDto: UpdateRoomDto) {
-    return this.roomService.update(id, updateRoomDto);
+  async update(@Param('id') id: string, @Body() updateRoomDto: UpdateRoomDto) {
+    return await this.roomService.update(id, updateRoomDto);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete room by ID' })
-  remove(@Param('id') id: string) {
-    return this.roomService.remove(id);
+  async remove(@Param('id') id: string) {
+    return await this.roomService.remove(id);
   }
 
   @Post(':id/avatar')
@@ -61,6 +62,27 @@ export class RoomController {
     @UploadedFile() file: Express.Multer.File,
     @Body() body: UploadRoomImgDto,
   ) {
-    return this.roomService.updateAvatar(id, file);
+    return await this.roomService.updateAvatar(id, file);
+  }
+
+  @Get('room-pagination')
+  @ApiOperation({ summary: 'Get all rooms with pagination' })
+  async findAllPagination(
+    @Query('pageIndex') pageIndex: string, // Nhận giá trị pageIndex từ Query Params
+    @Query('pageTake') pageTake: string, // Nhận giá trị pageTake từ Query Params
+  ) {
+    try {
+      const pageIndexNumber = parseInt(pageIndex) || 1; // Mặc định là trang 1 nếu không truyền
+      const pageTakeNumber = parseInt(pageTake) || 10; // Mặc định lấy 10 bản ghi nếu không truyền
+      return await this.roomService.findAllPagination(
+        pageIndexNumber,
+        pageTakeNumber,
+      );
+    } catch (error) {
+      return {
+        statusCode: 500,
+        message: `Failed to paginate rooms: ${error.message}`,
+      };
+    }
   }
 }

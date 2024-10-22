@@ -27,6 +27,36 @@ export class UserService {
     });
   }
 
+  //get user pagination with pageIndex and pageTake
+  async findAllPagination(pageIndex: number, pageTake: number) {
+    try {
+      const skipValue = (pageIndex - 1) * pageTake;
+
+      // Lấy users với skip và take
+      const users = await this.prisma.user.findMany({
+        skip: skipValue,
+        take: pageTake, // Lấy số phần tử tương ứng với pageTake
+        include: {
+          bookings: true,
+          ratings: true,
+        },
+      });
+      const totalUsers = await this.prisma.user.count();
+      const totalPages = Math.ceil(totalUsers / pageTake);
+
+      return {
+        statusCode: 200,
+        message: 'Danh sách người dùng đã phân trang thành công',
+        content: users,
+        pageCurrent: pageIndex,
+        pageCount: totalPages,
+        totalCount: totalUsers,
+      };
+    } catch (error) {
+      throw new Error(`Failed to paginate users: ${error.message}`);
+    }
+  }
+
   //upload avatar
   async updateAvatar(id: string, file: Express.Multer.File) {
     const uploadParams = {
