@@ -23,7 +23,6 @@ export class RoomService {
   async findAllPagination(pageIndex: number, pageTake: number) {
     // Tính toán giá trị skip
     const skip = (pageIndex - 1) * pageTake;
-
     // Lấy rooms với skip và take
     const rooms = await this.prisma.room.findMany({
       skip: skip, // Bỏ qua các phần tử đã tính toán
@@ -35,16 +34,13 @@ export class RoomService {
         ratings: true,
       },
     });
-
     // Tổng số phòng (dùng để tính số trang)
     const totalCount = await this.prisma.room.count();
-
     // Tính số trang
     const pageCount = Math.ceil(totalCount / pageTake);
-
     return {
       statusCode: 200,
-      message: 'Rooms retrieved successfully with pagination',
+      message: 'Danh sách phòng đã phân trang thành công',
       content: rooms,
       pageCurrent: pageIndex, // Trang hiện tại
       pageCount: pageCount, // Tổng số trang
@@ -67,6 +63,12 @@ export class RoomService {
   async findOne(id: string) {
     return this.prisma.room.findUnique({
       where: { id },
+      include: {
+        location: true,
+        bookings: true,
+        images: true,
+        ratings: true,
+      },
     });
   }
 

@@ -47,14 +47,14 @@ export class UserController {
     return this.userService.findAll();
   }
 
-  @Get(':id')
+  @Get('user-by-id/:id')
   @ApiOperation({ summary: 'Get a user by ID' })
   @ApiResponse({
     status: 200,
     description: 'Return the user with the specified ID.',
   })
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    return await this.userService.findOne(id);
   }
 
   @Put(':id')
@@ -89,16 +89,21 @@ export class UserController {
     return this.userService.updateAvatar(id, file);
   }
 
-  @Get('/user-pagination')
+  @Get('user-pagination')
   @ApiOperation({ summary: 'Get all users with pagination' })
   async findAllPagination(
     @Query('pageIndex') pageIndex: string,
     @Query('pageTake') pageTake: string,
   ) {
     try {
-      const pageIndexNumber = parseInt(pageIndex) || 1;
-      const pageTakeNumber = parseInt(pageTake) || 10;
-      return await this.userService.findAllPagination(
+      // Nếu giá trị không phải số, mặc định là trang 1 và lấy 10 người dùng
+      const pageIndexNumber = isNaN(parseInt(pageIndex))
+        ? 1
+        : parseInt(pageIndex);
+      const pageTakeNumber = isNaN(parseInt(pageTake))
+        ? 10
+        : parseInt(pageTake);
+      return await this.userService.findAllUserPagination(
         pageIndexNumber,
         pageTakeNumber,
       );

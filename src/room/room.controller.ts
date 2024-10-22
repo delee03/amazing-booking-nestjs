@@ -35,7 +35,7 @@ export class RoomController {
     return await this.roomService.findAll();
   }
 
-  @Get(':id')
+  @Get('room-by-id/:id')
   @ApiOperation({ summary: 'Get room by ID' })
   async findOne(@Param('id') id: string) {
     return await this.roomService.findOne(id);
@@ -72,8 +72,13 @@ export class RoomController {
     @Query('pageTake') pageTake: string, // Nhận giá trị pageTake từ Query Params
   ) {
     try {
-      const pageIndexNumber = parseInt(pageIndex) || 1; // Mặc định là trang 1 nếu không truyền
-      const pageTakeNumber = parseInt(pageTake) || 10; // Mặc định lấy 10 bản ghi nếu không truyền
+      // Nếu giá trị không phải số, mặc định là trang 1 và lấy 10 người dùng
+      const pageIndexNumber = isNaN(parseInt(pageIndex))
+        ? 1
+        : parseInt(pageIndex);
+      const pageTakeNumber = isNaN(parseInt(pageTake))
+        ? 10
+        : parseInt(pageTake);
       return await this.roomService.findAllPagination(
         pageIndexNumber,
         pageTakeNumber,

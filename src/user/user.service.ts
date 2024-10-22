@@ -4,6 +4,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UploadAvatarDto } from './dto/uploadavatar-user.dto';
 import { s3 } from 'spaces.config';
+import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class UserService {
@@ -28,10 +29,11 @@ export class UserService {
   }
 
   //get user pagination with pageIndex and pageTake
-  async findAllPagination(pageIndex: number, pageTake: number) {
+  async findAllUserPagination(pageIndex: number, pageTake: number) {
     try {
       const skipValue = (pageIndex - 1) * pageTake;
-
+      // Kiểm tra giá trị skip và take
+      console.log('Skip:', skipValue, 'Take:', pageTake);
       // Lấy users với skip và take
       const users = await this.prisma.user.findMany({
         skip: skipValue,
@@ -43,7 +45,8 @@ export class UserService {
       });
       const totalUsers = await this.prisma.user.count();
       const totalPages = Math.ceil(totalUsers / pageTake);
-
+      // Kiểm tra kết quả truy vấn users
+      console.log('Users:', users);
       return {
         statusCode: 200,
         message: 'Danh sách người dùng đã phân trang thành công',
@@ -90,12 +93,20 @@ export class UserService {
       content: allUsers, // Mảng `data` sẽ chứa tất cả users
     };
   }
-
   // Lấy thông tin một người dùng bằng ID
   async findOne(id: string) {
-    return this.prisma.user.findUnique({
+    const user = await this.prisma.user.findUnique({
       where: { id },
+      include: {
+        bookings: true,
+        ratings: true,
+      },
     });
+    return {
+      statusCode: 200,
+      message: `User with ID ${id} retrieved successfully`,
+      content: [user],
+    };
   }
 
   // Cập nhật thông tin người dùng
