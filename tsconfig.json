@@ -11,11 +11,13 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "incremental": true,
-    "skipLibCheck": true,
-    "strictNullChecks": false,
-    "noImplicitAny": false,
-    "strictBindCallApply": false,
-    "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
-  }
+    "skipLibCheck": false,
+    "strictNullChecks": true, // Khuyến nghị bật
+    "noImplicitAny": true, // Khuyến nghị bật
+    "strictBindCallApply": true, // Khuyến nghị bật
+    "forceConsistentCasingInFileNames": true, // Khuyến nghị bật
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
 }

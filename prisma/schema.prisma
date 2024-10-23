@@ -11,82 +11,73 @@ datasource db {
 
 generator client {
   provider = "prisma-client-js"
- 
 }
 
+
 model User {
-  id        String  @id @default(auto()) @map("_id") @db.ObjectId
-  email     String  @unique
-  name      String?
-  avatar    String?
-  password  String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  bookings  Booking[]
-  comments  Comment[]
-  role      Role    @default(USER)
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  name     String
+  email    String  @unique
+  password String
+  birthday DateTime?
+  gender   Boolean
+  phone    String
+  avatar   String? // Trường avatar (dạng URL) có thể null
+  role     Role    @default(USER)
+  bookings Booking[]
+  ratings  Rating[]
 }
 
 model Room {
-   id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   name        String
+  description String?
+  soLuong     Int
+  soKhach     Int
+  tienNghi    String
   price       Float
-  typeRoom    String       // Loại phòng (ví dụ: đơn, đôi, suite, ...)
-  extension   String[]     // Danh sách tiện ích, lưu dưới dạng mảng
-  hotel       Hotel        @relation(fields: [hotelId], references: [id])
-  hotelId     String       @db.ObjectId
+  avatar       String
+  location    Location @relation(fields: [locationId], references: [id])
+  locationId  String   @db.ObjectId
   bookings    Booking[]
-  images      RoomImages[] // Thêm quan hệ với bảng RoomImages
-  comments    Comment[]    // Add opposite relation field for Comment model
+  images      RoomImage[]
+  ratings     Rating[]
 }
-
 
 model Location {
   id String @id @default(auto()) @map("_id") @db.ObjectId
   city String
-  style String
+  style String?
   country String
-  hotels Hotel[] // 1 Location has many hotels
+  longitude String?
+  latitude String?
+  rooms Room[]
 }
 
-model Hotel {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  name String
-  description String
-  location Location @relation(fields: [locationId], references: [id])
-  locationId String @db.ObjectId
-  rooms Room[] // 1 Hotel has many rooms
-  images HotelImages[] // 1 Hotel has many images
-}
-
-model HotelImages {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  url String
-  hotel Hotel @relation(fields: [hotelId], references: [id])
-  hotelId String @db.ObjectId
-}
-
-
-model RoomImages {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  url String
-  room Room @relation(fields: [roomId], references: [id])
-  roomId String @db.ObjectId
+model RoomImage {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  url     String
+  room    Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  roomId  String @db.ObjectId
 }
 
 model Booking {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   checkIn   DateTime
   checkOut  DateTime
+  totalPrice Float
+  guests     Int
   user      User     @relation(fields: [userId], references: [id])
   userId    String   @db.ObjectId
   room      Room     @relation(fields: [roomId], references: [id])
   roomId    String   @db.ObjectId
+   paymentMethod  PaymentMethod  // Phương thức thanh toán
+  paymentStatus  Boolean 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model Comment {
+model Rating {
   id      String   @id @default(auto()) @map("_id") @db.ObjectId
   content   String
   star      Int
@@ -100,6 +91,14 @@ model Comment {
 enum Role {
   USER
   ADMIN
+}
 
+enum PaymentMethod {
+  CREDIT_CARD
+  MOMO
+  VNPAY
+  PAYPAL
+  BANK_TRANSFER
+  OTHER
 }
 
