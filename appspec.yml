@@ -3,6 +3,8 @@ os: linux
 files:
   - source: /
     destination: /home/ec2-user/amazing-booking-nestjs
+    overwrite: true
+    ignoreHiddenFiles: true
 hooks:
   AfterInstall:
     - location: scripts/install_dependencies.sh
