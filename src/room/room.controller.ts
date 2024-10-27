@@ -90,4 +90,22 @@ export class RoomController {
       };
     }
   }
+
+  @Get('room-by-location/:id')
+  @ApiOperation({ summary: 'Get all rooms by location ID' })
+  async findRoomByLocation(@Param('id') id: string) {
+    try {
+      const listRoom = await this.roomService.findRoomByLocation(id);
+      return {
+        statusCode: 200,
+        message: 'Lấy danh sách phòng theo vị trí thành công',
+        content: listRoom,
+      };
+    } catch (error) {
+      return {
+        statusCode: 500,
+        message: `Failed to get rooms by location ID: ${error.message}`,
+      };
+    }
+  }
 }
