@@ -136,7 +136,7 @@ export class AuthService {
           name: signUpDto.name,
           phone: signUpDto.phone,
           avatar: null,
-          role: signUpDto.role,
+          role: signUpDto.role || UserRole.USER,
           password: hashedPassword,
           birthday: new Date(signUpDto.birthday),
           gender: signUpDto.gender,
@@ -155,7 +155,7 @@ export class AuthService {
         phone: finalUser.phone,
         avatar: finalUser.avatar,
         role: finalUser.role as unknown as UserRole, // Map Role tới UserRole
-        birthday: finalUser.birthday,
+        birthday: finalUser.birthday, // Trả về định dạng dd/mm/yyyy
         gender: finalUser.gender,
       };
     } catch (error) {

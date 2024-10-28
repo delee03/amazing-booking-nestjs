@@ -4,6 +4,9 @@ import {
   IsNotEmpty,
   IsBoolean,
   IsDateString,
+  isString,
+  IsEnum,
+  IsOptional,
 } from 'class-validator';
 
 export enum UserRole {
@@ -46,7 +49,12 @@ export class SignUpDto {
   @IsBoolean()
   gender: boolean;
 
-  @ApiProperty({ description: 'User avatar URL', required: false })
-  @IsString()
-  role: UserRole;
+  @ApiProperty({
+    description: 'User role',
+    required: false,
+    default: UserRole.USER,
+  })
+  @IsEnum(UserRole)
+  @IsOptional()
+  role: UserRole = UserRole.USER; // default: 'USER'
 }

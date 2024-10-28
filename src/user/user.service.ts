@@ -16,7 +16,7 @@ export class UserService {
     let formattedBirthday: Date | null = null;
 
     if (birthday) {
-      const [day, month, year] = birthday.split('/');
+      const [year, month, day] = birthday.split('/');
       formattedBirthday = new Date(`${day}-${month}-${year}`);
     }
 
