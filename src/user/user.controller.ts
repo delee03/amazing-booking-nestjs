@@ -77,7 +77,7 @@ export class UserController {
     return this.userService.remove(id);
   }
 
-  @Post(':id/avatar')
+  @Post('avatar/:id')
   @ApiOperation({ summary: 'Upload an avatar for a user' })
   @ApiConsumes('multipart/form-data') // Xác định kiểu dữ liệu là multipart/form-data
   @UseInterceptors(FileInterceptor('file'))

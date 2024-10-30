@@ -5,6 +5,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UploadAvatarDto } from './dto/uploadavatar-user.dto';
 import { s3 } from 'spaces.config';
 import { ObjectId } from 'mongodb';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -12,18 +13,9 @@ export class UserService {
 
   // Tạo user mới
   async create(createUserDto: CreateUserDto) {
-    const { birthday, ...rest } = createUserDto;
-    let formattedBirthday: Date | null = null;
-
-    if (birthday) {
-      const [year, month, day] = birthday.split('/');
-      formattedBirthday = new Date(`${day}-${month}-${year}`);
-    }
-
-    return this.prisma.user.create({
+    return await this.prisma.user.create({
       data: {
-        ...rest,
-        birthday: formattedBirthday,
+        ...createUserDto,
       },
     });
   }
@@ -111,24 +103,29 @@ export class UserService {
 
   // Cập nhật thông tin người dùng
   async update(id: string, updateUserDto: UpdateUserDto) {
-    const user = this.prisma.user.update({
-      where: { id },
-      // data: updateUserDto,
-      data: {
-        name: updateUserDto.name,
-        email: updateUserDto.email,
-        password: updateUserDto.password,
-        avatar: updateUserDto.avatar,
-        role: updateUserDto.role,
-        // Không cần đưa `id` vào `data` vì không được phép cập nhật khóa chính
-        // bookings và ratings cũng không cần nếu không có sự thay đổi.
-      },
-    });
-    return {
-      statusCode: 200,
-      message: `User with ID ${id} has been successfully updated.`,
-      content: [user],
-    };
+    try {
+      let passwordHash = updateUserDto.password;
+      if (updateUserDto.password) {
+        passwordHash = await bcrypt.hash(updateUserDto.password, 10);
+      }
+      const user = await this.prisma.user.update({
+        where: { id },
+        data: {
+          name: updateUserDto.name,
+          email: updateUserDto.email,
+          password: passwordHash ? passwordHash : undefined, //// Chỉ cập nhật password nếu có mật khẩu mới, nếu không giữ nguyên mật khẩu cũ
+          avatar: updateUserDto.avatar,
+          role: updateUserDto.role,
+        },
+      });
+      return {
+        statusCode: 200,
+        message: `User with ID ${id} has been successfully updated.`,
+        content: user,
+      };
+    } catch (error) {
+      throw new Error(`Failed to update user: ${error.message}`);
+    }
   }
 
   // Xóa một người dùng

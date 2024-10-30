@@ -8,14 +8,65 @@ import { PrismaService } from '../Prisma/prisma.service';
 import { Role, User } from '@prisma/client';
 import { SignInDto } from './dto/sign-in.dto';
 import { SignUpDto, UserRole } from './dto/sign-up.dto';
+import { OAuth2Client } from 'google-auth-library';
 
 @Injectable()
 export class AuthService {
+  private googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
   constructor(
     private jwtService: JwtService,
     @Inject('Logger') private readonly logger: Logger,
     private prisma: PrismaService,
   ) {}
+
+  async googleLogin(token: string) {
+    const ticket = await this.googleClient.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
+
+    if (!payload || !payload.email) {
+      throw new Error('Google token is invalid or email is missing');
+    }
+
+    const { email, name, picture } = payload;
+
+    // Kiểm tra xem người dùng đã tồn tại hay chưa
+    let user = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      // Tạo người dùng mới nếu chưa tồn tại
+      user = await this.prisma.user.create({
+        data: {
+          email,
+          name: name || 'Google User',
+          avatar: picture,
+          role: 'USER', // hoặc role nào bạn muốn
+          password: 'string', // Mặc định là chuỗi rỗng, có thể cập nhật sau
+          gender: true, // Đặt giá trị mặc định
+          phone: '0123456789', // Mặc định là chuỗi rỗng
+        },
+      });
+    }
+
+    // Tạo JWT cho người dùng
+    const jwtToken = this.jwtService.sign({
+      email: user.email,
+      sub: user.id,
+      role: user.role,
+    });
+
+    return {
+      content: {
+        user,
+        token: jwtToken,
+      },
+    };
+  }
 
   // Hàm thực hiện xác thực user
   // Trả về user nếu user hợp lệ
@@ -31,6 +82,11 @@ export class AuthService {
         console.log('Comparing passwords');
         const isPasswordValid = await bcrypt.compare(password, user.password);
         console.log('Password valid:', isPasswordValid ? 'Yes' : 'No');
+
+        if (user.role !== 'ADMIN') {
+          throw new AuthException('Tài khoản không có quyền truy cập');
+        }
+
         // Nếu password hợp lệ thì trả về user
         if (isPasswordValid) {
           console.log('Password match:' + user.email + ' is validated');
@@ -57,7 +113,15 @@ export class AuthService {
       const { email, password } = signInDto;
       const user = await this.validateUser(email, password);
       if (!user) {
-        throw new AuthException('Email hoặc mật khẩu không đúng !');
+        // throw new AuthException('Email hoặc mật khẩu không đúng !');
+        return {
+          statusCode: 400,
+          content: {
+            message: 'Email hoặc mật khẩu không đúng !',
+          },
+          token: '',
+          dateTime: new Date().toISOString(),
+        };
       }
       const fullUser = await this.prisma.user.findUnique({
         where: { email },
@@ -79,7 +143,11 @@ export class AuthService {
       if (!user) {
         throw new AuthException('Email hoặc mật khẩu không đúng !');
       }
-      const payload: JwtPayload = { email: user.email, sub: user.id };
+      const payload: JwtPayload = {
+        email: user.email,
+        sub: user.id,
+        role: fullUser.role,
+      };
       console.log(
         'Payload: Mail(' + payload.email + ') With id:' + payload.sub,
       );
@@ -115,8 +183,16 @@ export class AuthService {
         dateTime: new Date().toISOString(),
       };
     } catch (error) {
-      this.logger.error('Error during sign in', { error });
-      throw new AuthException('Email hoặc mật khẩu không đúng !');
+      // this.logger.error('Error during sign in', { error });
+      // throw new AuthException('Email hoặc mật khẩu không đúng !');
+      return {
+        statusCode: 400,
+        content: {
+          message: 'Email hoặc mật khẩu không đúng !',
+        },
+        token: '',
+        dateTime: new Date().toISOString(),
+      };
     }
   }
 

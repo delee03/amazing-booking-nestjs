@@ -15,6 +15,7 @@ import { AuthService } from './auth.service';
 import { Request } from 'express';
 import { LocalGuard } from './guards/local.guard';
 import { JwtAuthGuard } from './guards/jwt.guard';
+import { GoogleTokenDto } from './dto/google-token.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -45,6 +46,10 @@ export class AuthController {
     return this.authService.signUp(signUpDto);
   }
 
+  @Post('google')
+  async googleLogin(@Body() googleToken: GoogleTokenDto) {
+    return this.authService.googleLogin(googleToken.token);
+  }
   //   @UseGuards(JwtAuthGuard)
   //   @Get('profile')
   //   getProfile(@Req() req: Request) {

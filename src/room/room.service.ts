@@ -54,15 +54,14 @@ export class RoomService {
   //     });
   //   }
 
-//get all room by location id
-async findRoomByLocation(idLocation : string){
-  return this.prisma.room.findMany({
-    where: {
-      locationId: idLocation
-    }
-  })
-}
-
+  //get all room by location id
+  async findRoomByLocation(idLocation: string) {
+    return this.prisma.room.findMany({
+      where: {
+        locationId: idLocation,
+      },
+    });
+  }
 
   // Lấy danh sách tất cả các room
   async findAll() {

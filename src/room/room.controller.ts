@@ -53,7 +53,7 @@ export class RoomController {
     return await this.roomService.remove(id);
   }
 
-  @Post(':id/avatar')
+  @Post('avatar/:id')
   @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Upload room avatar' })
   @UseInterceptors(FileInterceptor('file'))

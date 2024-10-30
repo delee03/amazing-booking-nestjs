@@ -2,6 +2,8 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as dotenv from 'dotenv';
+import * as express from 'express';
+import { Request, Response, NextFunction } from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -12,6 +14,14 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
+
+  // Thêm các header liên quan đến Cross-Origin-Opener-Policy và Cross-Origin-Embedder-Policy
+  app.use((req: Request, res: Response, next: () => void) => {
+    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+    res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+    next();
+  });
+
   // Cấu hình Swagger
   const config = new DocumentBuilder()
     .setTitle('Hotel Booking API')

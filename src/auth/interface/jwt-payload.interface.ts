@@ -3,4 +3,5 @@ export interface JwtPayload {
   email: string;
   iat?: number; // Issued At: Thời gian token được tạo
   exp?: number; // Expiration: Thời gian token hết hạn
+  role: string;
 }
