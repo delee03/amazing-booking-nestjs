@@ -63,7 +63,7 @@ export class BookingService {
 
   //cập nhật booking bởi id
   async update(id: string, updateBookingDTO: UpdateBookingDto) {
-    const updateBooking = this.prisma.booking.update({
+    const updateBooking = await this.prisma.booking.update({
       where: { id },
       data: updateBookingDTO,
     });
@@ -74,9 +74,17 @@ export class BookingService {
     };
   }
 
+  // Phương thức cập nhật booking với các thay đổi
+  async update2(bookingId: string, data: { paymentStatus: boolean }) {
+    return await this.prisma.booking.update({
+      where: { id: bookingId },
+      data: { paymentStatus: data.paymentStatus },
+    });
+  }
+
   //xóa booking bởi id
   async remove(id: string) {
-    const bookingDeleted = this.prisma.booking.delete({
+    const bookingDeleted = await this.prisma.booking.delete({
       where: { id },
     });
     return {
