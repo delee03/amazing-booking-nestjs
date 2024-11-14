@@ -13,8 +13,18 @@ export class PaymentService {
   async createPaymentUrl(bookingId: string, amount: number) {
     const vnpUrl = this.configService.get<string>('VNPAY_URL');
     const vnpTmnCode = this.configService.get<string>('VNPAY_TMN_CODE');
-    const vnpHashSecret = this.configService.get<string>('VNPAY_HASH_SECRET')!;
+    const vnpHashSecret = this.configService.get<string>('VNPAY_HASH_SECRET');
     const vnpReturnUrl = this.configService.get<string>('VNPAY_RETURN_URL');
+    console.log({
+      vnpUrl,
+      vnpTmnCode,
+      vnpHashSecret,
+      vnpReturnUrl,
+    });
+
+    if (!vnpHashSecret || !vnpUrl || !vnpTmnCode || !vnpReturnUrl) {
+      throw new Error('One or more VNPAY configuration values are missing');
+    }
 
     const date = new Date();
     const createDate = `${date.getFullYear()}${(date.getMonth() + 1)
@@ -27,50 +37,42 @@ export class PaymentService {
       .toString()
       .padStart(2, '0')}`;
 
-    let vnp_Params: {
-      vnp_Version: string;
-      vnp_Command: string;
-      vnp_TmnCode: string | undefined;
-      vnp_Amount: number;
-      vnp_CurrCode: string;
-      vnp_TxnRef: string;
-      vnp_OrderInfo: string;
-      vnp_OrderType: string;
-      vnp_Locale: string;
-      vnp_ReturnUrl: string | undefined;
-      vnp_IpAddr: string;
-      vnp_CreateDate: string;
-      vnp_SecureHash?: string;
-    } = {
-      vnp_Version: '2.1.0',
-      vnp_Command: 'pay',
+    // Thiết lập các tham số cần thiết mà không mã hóa OrderInfo
+    let vnp_Params: any = {
+      vnp_Version: this.configService.get<string>('VNPAY_VERSION') || '2.1.0',
+      vnp_Command: this.configService.get<string>('VNPAY_COMMAND') || 'pay',
       vnp_TmnCode: vnpTmnCode,
-      vnp_Amount: amount * 10, // số tiền cần nhân 100
-      vnp_CurrCode: 'VND',
-      vnp_TxnRef: bookingId, // mã booking
+      vnp_Amount: amount * 100,
+      vnp_CurrCode: this.configService.get<string>('VNPAY_CURR_CODE') || 'VND',
+      vnp_TxnRef: bookingId,
       vnp_OrderInfo: `Thanh toan cho booking ${bookingId}`,
       vnp_OrderType: 'billpayment',
-      vnp_Locale: 'vn',
+      vnp_Locale: this.configService.get<string>('VNPAY_LOCALE') || 'vn',
       vnp_ReturnUrl: vnpReturnUrl,
       vnp_IpAddr: '127.0.0.1',
       vnp_CreateDate: createDate,
     };
 
-    vnp_Params = this.sortObject(vnp_Params);
+    // Sắp xếp các tham số theo thứ tự từ điển
+    const sortedParams = this.sortObject(vnp_Params);
 
-    const signData = this.createQueryString(vnp_Params);
+    // Tạo chuỗi ký kết từ các tham số đã sắp xếp (không mã hóa URL tại đây)
+    const signData = Object.keys(sortedParams)
+      .map((key) => `${key}=${sortedParams[key]}`)
+      .join('&');
+
+    // Mã hóa SHA512
     const hmac = crypto.createHmac('sha512', vnpHashSecret);
     const signed = hmac.update(signData).digest('hex');
-    vnp_Params['vnp_SecureHash'] = signed;
+    sortedParams['vnp_SecureHash'] = signed;
 
-    const query = this.createQueryString(vnp_Params);
-    return `${vnpUrl}?${query}`;
-  }
-
-  private createQueryString(params: any) {
-    return Object.keys(params)
-      .map((key) => `${key}=${params[key]}`)
+    // Tạo URL hoàn chỉnh và chỉ mã hóa đúng cách ở bước cuối
+    const query = Object.keys(sortedParams)
+      .map((key) => `${key}=${encodeURIComponent(sortedParams[key])}`)
       .join('&');
+
+    console.log('Final URL:', `${vnpUrl}?${query}`);
+    return `${vnpUrl}?${query}`;
   }
 
   private sortObject(obj: any) {
@@ -84,19 +86,13 @@ export class PaymentService {
 
   // Hàm lấy tổng tiền của booking dựa trên bookingId
   async getBookingAmount(bookingId: string): Promise<number> {
-    // Tìm booking theo bookingId
     const booking = await this.bookingService.findOne(bookingId);
-
-    // Kiểm tra nếu booking không tồn tại
     if (!booking) {
       throw new NotFoundException(`Booking with ID ${bookingId} not found`);
     }
-
-    // Lấy giá trị `totalPrice` từ booking
-    const amount = booking.totalPrice;
-
-    return amount;
+    return booking.content.totalPrice;
   }
+
   // Phương thức mới để cập nhật trạng thái thanh toán của booking
   async updateBookingStatus(bookingId: string) {
     return this.bookingService.update2(bookingId, { paymentStatus: true });

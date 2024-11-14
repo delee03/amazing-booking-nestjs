@@ -9,26 +9,29 @@ export class LocationService {
 
   // Tạo location mới
   async create(createLocationDto: CreateLocationDto) {
-    return this.prisma.location.create({
+    return await this.prisma.location.create({
       data: createLocationDto,
     });
   }
 
   // Lấy danh sách tất cả locations
   async findAll() {
-    return this.prisma.location.findMany();
+    return await this.prisma.location.findMany();
   }
 
   // Lấy thông tin location theo ID
   async findOne(id: string) {
-    return this.prisma.location.findUnique({
+    if (!id) {
+      throw new Error('Location ID is required');
+    }
+    return await this.prisma.location.findUnique({
       where: { id },
     });
   }
 
   // Cập nhật thông tin location
   async update(id: string, updateLocationDto: UpdateLocationDto) {
-    return this.prisma.location.update({
+    return await this.prisma.location.update({
       where: { id },
       data: updateLocationDto,
     });
@@ -36,7 +39,7 @@ export class LocationService {
 
   // Xóa một location
   async remove(id: string) {
-    return this.prisma.location.delete({
+    return await this.prisma.location.delete({
       where: { id },
     });
   }

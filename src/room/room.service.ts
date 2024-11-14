@@ -14,7 +14,7 @@ export class RoomService {
       ...createRoomDto,
       avatar: createRoomDto.avatar ?? 'string',
     };
-    return this.prisma.room.create({
+    return await this.prisma.room.create({
       data,
     });
   }
@@ -56,7 +56,10 @@ export class RoomService {
 
   //get all room by location id
   async findRoomByLocation(idLocation: string) {
-    return this.prisma.room.findMany({
+    if (!idLocation) {
+      throw new Error('Location ID is required');
+    }
+    return await this.prisma.room.findMany({
       where: {
         locationId: idLocation,
       },
@@ -65,12 +68,12 @@ export class RoomService {
 
   // Lấy danh sách tất cả các room
   async findAll() {
-    return this.prisma.room.findMany();
+    return await this.prisma.room.findMany();
   }
 
   // Lấy thông tin room theo ID
   async findOne(id: string) {
-    return this.prisma.room.findUnique({
+    return await this.prisma.room.findUnique({
       where: { id },
       include: {
         location: true,
@@ -83,7 +86,7 @@ export class RoomService {
 
   // Cập nhật room theo ID
   async update(id: string, updateRoomDto: UpdateRoomDto) {
-    return this.prisma.room.update({
+    return await this.prisma.room.update({
       where: { id },
       data: updateRoomDto,
     });
@@ -91,7 +94,7 @@ export class RoomService {
 
   // Xóa room theo ID
   async remove(id: string) {
-    return this.prisma.room.delete({
+    return await this.prisma.room.delete({
       where: { id },
     });
   }

@@ -12,6 +12,7 @@ import { LocationService } from './location.service';
 import { CreateLocationDto } from './dto/create-location.dto';
 import { UpdateLocationDto } from './dto/update-location.dto';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
+import { handleResponse } from 'src/common/handleRespsonse';
 
 @ApiTags('locations')
 @Controller('locations')
@@ -24,29 +25,45 @@ export class LocationController {
     status: 201,
     description: 'The location has been successfully created.',
   })
-  create(@Body() createLocationDto: CreateLocationDto) {
-    return this.locationService.create(createLocationDto);
+  async create(@Body() createLocationDto: CreateLocationDto) {
+    const createdLocation =
+      await this.locationService.create(createLocationDto);
+    return handleResponse('Tạo mới địa điểm thành công', createdLocation, 201);
   }
 
   @Get()
   @ApiOperation({ summary: 'Get All Locations' })
-  findAll() {
-    return this.locationService.findAll();
+  async findAll() {
+    const getAllLocations = await this.locationService.findAll();
+    return handleResponse(
+      'Lấy tất cả địa điểm thành công',
+      getAllLocations,
+      200,
+    );
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get Location By Id' })
-  findOne(@Param('id') id: string) {
-    return this.locationService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    const getLocationById = await this.locationService.findOne(id);
+    return handleResponse(
+      'Lấy địa điểm theo ID thành công',
+      getLocationById,
+      200,
+    );
   }
 
   @Put(':id')
   @ApiOperation({ summary: 'Update Location' })
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateLocationDto: UpdateLocationDto,
   ) {
-    return this.locationService.update(id, updateLocationDto);
+    const updatedLocation = await this.locationService.update(
+      id,
+      updateLocationDto,
+    );
+    return handleResponse('Cập nhật địa điểm thành công', updatedLocation);
   }
 
   @Delete(':id')
@@ -55,7 +72,8 @@ export class LocationController {
     description: 'The  has been successfully deleted.',
   })
   @ApiOperation({ summary: 'Remove a Location' })
-  remove(@Param('id') id: string) {
-    return this.locationService.remove(id);
+  async remove(@Param('id') id: string) {
+    const deletedLocation = await this.locationService.remove(id);
+    return handleResponse('Xóa địa điểm thành công', deletedLocation);
   }
 }

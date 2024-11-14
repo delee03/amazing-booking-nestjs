@@ -64,20 +64,6 @@ export class BookingController {
     return this.bookingService.remove(id);
   }
 
-  @Get('/vnpay_return')
-  @Redirect('/profile') // Redirect về trang lịch sử đặt phòng của user
-  async vnpayReturn(@Query() query: any) {
-    const { vnp_TxnRef, vnp_ResponseCode } = query;
-
-    if (vnp_ResponseCode === '00') {
-      // Thanh toán thành công
-      await this.paymentService.updateBookingStatus(vnp_TxnRef);
-      return { url: '/profile?status=success' };
-    } else {
-      // Thanh toán thất bại
-      return { url: '/profile?status=failure' };
-    }
-  }
   // Endpoint để tạo URL thanh toán
   @Get('vnpay-url/:bookingId')
   async getVnpayUrl(@Param('bookingId') bookingId: string) {

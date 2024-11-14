@@ -11,6 +11,7 @@ import { RatingService } from './rating.service';
 import { CreateRatingDto } from './dto/create-rating.dto';
 import { UpdateRatingDto } from './dto/update-rating.dto';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { handleResponse } from 'src/common/handleRespsonse';
 
 @ApiTags('ratings')
 @Controller('ratings')
@@ -31,13 +32,15 @@ export class RatingController {
   @Get()
   @ApiOperation({ summary: 'Get all ratings' })
   async findAll() {
-    return await this.ratingService.findAll();
+    const allRatings = await this.ratingService.findAll();
+    return handleResponse('Lấy tất cả ratings thành công', allRatings);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get rating by ID' })
   async findOne(@Param('id') id: string) {
-    return await this.ratingService.findOne(id);
+    const ratingById = await this.ratingService.findOne(id);
+    return handleResponse('Lấy dữ liệu ratingId thành công', ratingById);
   }
 
   @Patch(':id')
@@ -46,13 +49,21 @@ export class RatingController {
     @Param('id') id: string,
     @Body() updateRatingDto: UpdateRatingDto,
   ) {
-    return await this.ratingService.update(id, updateRatingDto);
+    const updatedRatingById = await this.ratingService.update(
+      id,
+      updateRatingDto,
+    );
+    return handleResponse(
+      'Cập nhật dữ liệu ratingId thành công',
+      updatedRatingById,
+    );
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete rating by ID' })
   async remove(@Param('id') id: string) {
-    return await this.ratingService.remove(id);
+    const deletedRating = await this.ratingService.remove(id);
+    return handleResponse('Xóa dữ liệu ratingId thành công', deletedRating);
   }
 
   // Lấy tất cả ratings theo roomId

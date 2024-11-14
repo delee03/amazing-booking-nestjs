@@ -23,6 +23,7 @@ import {
   ApiResponse,
   ApiConsumes,
 } from '@nestjs/swagger';
+import { handleResponse } from 'src/common/handleRespsonse';
 // Removed unused import for Multer
 
 @ApiTags('users')
@@ -36,15 +37,17 @@ export class UserController {
     status: 201,
     description: 'The user has been successfully created.',
   })
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
+  async create(@Body() createUserDto: CreateUserDto) {
+    const createdUser = await this.userService.create(createUserDto);
+    return handleResponse('Tạo mới user thành công', createdUser, 201);
   }
 
   @Get()
   @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({ status: 200, description: 'Return all users.' })
-  findAll() {
-    return this.userService.findAll();
+  async findAll() {
+    const getAllUsers = await this.userService.findAll();
+    return handleResponse('Lấy tất cả user thành công', getAllUsers);
   }
 
   @Get('user-by-id/:id')
@@ -54,7 +57,8 @@ export class UserController {
     description: 'Return the user with the specified ID.',
   })
   async findOne(@Param('id') id: string) {
-    return await this.userService.findOne(id);
+    const getUserById = await this.userService.findOne(id);
+    return handleResponse('Lấy thông tin user thành công', getUserById);
   }
 
   @Put(':id')
@@ -63,8 +67,9 @@ export class UserController {
     status: 200,
     description: 'The user has been successfully updated.',
   })
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(id, updateUserDto);
+  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    const updateUser = await this.userService.update(id, updateUserDto);
+    return handleResponse('Cập nhật thông tin user thành công', updateUser);
   }
 
   @Delete(':id')
@@ -73,8 +78,9 @@ export class UserController {
     status: 200,
     description: 'The user has been successfully deleted.',
   })
-  remove(@Param('id') id: string) {
-    return this.userService.remove(id);
+  async remove(@Param('id') id: string) {
+    const deletedUser = await this.userService.remove(id);
+    return handleResponse('Xóa user thành công', deletedUser, 200);
   }
 
   @Post('avatar/:id')
@@ -86,7 +92,12 @@ export class UserController {
     @UploadedFile() file: Express.Multer.File,
     @Body() body: UploadAvatarDto,
   ) {
-    return this.userService.updateAvatar(id, file);
+    const updateAvatar = await this.userService.updateAvatar(id, file);
+    return handleResponse(
+      'Upload avatar cho người dùng thành công',
+      updateAvatar,
+      201,
+    );
   }
 
   @Get('user-pagination')

@@ -78,27 +78,17 @@ export class UserService {
 
   // Lấy danh sách tất cả người dùng
   async findAll() {
-    const allUsers = await this.prisma.user.findMany();
-    return {
-      statusCode: 200,
-      message: 'All users retrieved successfully',
-      content: allUsers, // Mảng `data` sẽ chứa tất cả users
-    };
+    return await this.prisma.user.findMany();
   }
   // Lấy thông tin một người dùng bằng ID
   async findOne(id: string) {
-    const user = await this.prisma.user.findUnique({
+    return await this.prisma.user.findUnique({
       where: { id },
       include: {
         bookings: true,
         ratings: true,
       },
     });
-    return {
-      statusCode: 200,
-      message: `User with ID ${id} retrieved successfully`,
-      content: [user],
-    };
   }
 
   // Cập nhật thông tin người dùng
@@ -108,7 +98,7 @@ export class UserService {
       if (updateUserDto.password) {
         passwordHash = await bcrypt.hash(updateUserDto.password, 10);
       }
-      const user = await this.prisma.user.update({
+      return await this.prisma.user.update({
         where: { id },
         data: {
           name: updateUserDto.name,
@@ -118,11 +108,6 @@ export class UserService {
           role: updateUserDto.role,
         },
       });
-      return {
-        statusCode: 200,
-        message: `User with ID ${id} has been successfully updated.`,
-        content: user,
-      };
     } catch (error) {
       throw new Error(`Failed to update user: ${error.message}`);
     }
@@ -130,16 +115,8 @@ export class UserService {
 
   // Xóa một người dùng
   async remove(id: string) {
-    const deleteUser = this.prisma.user.delete({
+    return await this.prisma.user.delete({
       where: { id },
     });
-    return {
-      content: [
-        {
-          message: `User with ID ${id} has been successfully deleted.`,
-          data: [deleteUser],
-        },
-      ],
-    };
   }
 }

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/Prisma/prisma.service';
 import { CreateBookingDto } from './dto/booking-create.dto';
 import { UpdateBookingDto } from './dto/booking-update.dto';
+import { handleResponse } from 'src/common/handleRespsonse';
 
 @Injectable()
 export class BookingService {
@@ -36,13 +37,15 @@ export class BookingService {
 
   //lấy booking by id
   async findOne(id: string) {
-    return this.prisma.booking.findUnique({
+    const bookingById = await this.prisma.booking.findUnique({
       where: { id },
       include: {
         room: true,
         user: true,
       },
     });
+
+    return handleResponse('Lấy dữ liệu bookingId thành công', bookingById);
   }
 
   //lấy booking by user id

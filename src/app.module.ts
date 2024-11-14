@@ -11,6 +11,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { AuthModule } from './auth/auth.module';
 import { BookingModule } from './booking/booking.module';
 import { RatingModule } from './rating/rating.module';
+import { ConfigModule } from '@nestjs/config';
 @Module({
   imports: [
     UserModule,
@@ -20,6 +21,9 @@ import { RatingModule } from './rating/rating.module';
     AuthModule,
     BookingModule,
     RatingModule,
+    ConfigModule.forRoot({
+      isGlobal: true, // Để ConfigModule sử dụng được ở mọi nơi trong ứng dụng
+    }),
     // MulterModule.register({
     //   dest: './uploads', // Thư mục tạm trước khi upload lên DigitalOcean
     // }),

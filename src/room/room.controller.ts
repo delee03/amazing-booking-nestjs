@@ -17,6 +17,8 @@ import { UpdateRoomDto } from './dto/update-room.dto';
 import { ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadRoomImgDto } from './dto/upload-room-img.dto';
+import { handleResponse } from 'src/common/handleRespsonse';
+import { handleErorr } from 'src/common/handleErorr';
 
 @ApiTags('rooms')
 @Controller('rooms')
@@ -25,32 +27,57 @@ export class RoomController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new room' })
-  create(@Body() createRoomDto: CreateRoomDto) {
-    return this.roomService.create(createRoomDto);
+  async create(@Body() createRoomDto: CreateRoomDto) {
+    try {
+      const roomCreated = await this.roomService.create(createRoomDto);
+      return handleResponse('Tạo phòng mới thành công', roomCreated, 201);
+    } catch (error) {
+      return handleErorr('Tạo phòng mới thất bại', error.statusCode, error);
+    }
   }
 
   @Get()
   @ApiOperation({ summary: 'Get all rooms' })
   async findAll() {
-    return await this.roomService.findAll();
+    try {
+      const getAllRooms = await this.roomService.findAll();
+      return handleResponse('Lấy tất cả phòng thành công', getAllRooms);
+    } catch (error) {
+      return handleErorr(
+        'Lấy danh sách phòng thất bại',
+        error.statusCode,
+        error,
+      );
+    }
   }
 
   @Get('room-by-id/:id')
   @ApiOperation({ summary: 'Get room by ID' })
   async findOne(@Param('id') id: string) {
-    return await this.roomService.findOne(id);
+    try {
+      const roomById = await this.roomService.findOne(id);
+      return handleResponse('Lấy phòng theo ID thành công', roomById);
+    } catch (error) {
+      return handleErorr('Lấy phòng thất bại', error.statusCode, error);
+    }
   }
 
   @Put(':id')
   @ApiOperation({ summary: 'Update room by ID' })
   async update(@Param('id') id: string, @Body() updateRoomDto: UpdateRoomDto) {
-    return await this.roomService.update(id, updateRoomDto);
+    try {
+      const updatedRoom = await this.roomService.update(id, updateRoomDto);
+      return handleResponse('Cập nhật phòng thành công', updatedRoom);
+    } catch (error) {
+      return handleErorr('Lỗi khi sửa phòng', 403, error);
+    }
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete room by ID' })
   async remove(@Param('id') id: string) {
-    return await this.roomService.remove(id);
+    const deletedRoom = await this.roomService.remove(id);
+    return handleResponse('Xóa phòng thành công', deletedRoom);
   }
 
   @Post('avatar/:id')
@@ -62,7 +89,12 @@ export class RoomController {
     @UploadedFile() file: Express.Multer.File,
     @Body() body: UploadRoomImgDto,
   ) {
-    return await this.roomService.updateAvatar(id, file);
+    try {
+      const uploadAvatar = await this.roomService.updateAvatar(id, file);
+      return handleResponse('Upload Avatart thành công', uploadAvatar);
+    } catch (error) {
+      return handleErorr('Lỗi khi upload avatar cho room', 400, error);
+    }
   }
 
   @Get('room-pagination')
@@ -96,11 +128,10 @@ export class RoomController {
   async findRoomByLocation(@Param('id') id: string) {
     try {
       const listRoom = await this.roomService.findRoomByLocation(id);
-      return {
-        statusCode: 200,
-        message: 'Lấy danh sách phòng theo vị trí thành công',
-        content: listRoom,
-      };
+      return handleResponse(
+        'Lấy danh sách phòng theo vị trí thành công',
+        listRoom,
+      );
     } catch (error) {
       return {
         statusCode: 500,

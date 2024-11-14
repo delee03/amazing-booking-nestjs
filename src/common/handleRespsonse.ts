@@ -1,11 +1,11 @@
 export const handleResponse = (
-  message: '',
+  message: string = 'Trả dữ liệu thành công',
   data: any,
-  status: number = 200,
+  statusCode: number = 200,
 ) => {
   return {
     message,
+    statusCode,
     content: data,
-    status,
   };
 };
