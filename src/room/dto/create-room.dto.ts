@@ -3,7 +3,7 @@ import { IsString, IsNumber, IsOptional } from 'class-validator';
 
 export class CreateRoomDto {
   @ApiProperty({ description: 'Name of the room' })
-  @IsString()
+  @IsString({message: "Trường name phải là String"})
   name: string;
 
   @ApiProperty({ description: 'Description of the room', required: false })

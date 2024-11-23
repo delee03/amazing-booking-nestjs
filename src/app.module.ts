@@ -22,8 +22,9 @@ import { ConfigModule } from '@nestjs/config';
     BookingModule,
     RatingModule,
     ConfigModule.forRoot({
-      isGlobal: true, // Để ConfigModule sử dụng được ở mọi nơi trong ứng dụng
+      isGlobal: true, 
     }),
+    // Để ConfigModule sử dụng được ở mọi nơi trong ứng dụng
     // MulterModule.register({
     //   dest: './uploads', // Thư mục tạm trước khi upload lên DigitalOcean
     // }),
