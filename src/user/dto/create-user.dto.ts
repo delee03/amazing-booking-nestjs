@@ -17,18 +17,12 @@ export class CreateUserDto {
   email: string;
 
   @ApiProperty({
-    description: 'User birthday in dd/mm/yyyy format',
+    description: 'User birthday in ISO string format',
     required: false,
   })
-  @IsString()
-  @Type(() => Date)
-  @IsDateString(
-    { strict: true },
-    {
-      message: 'birthday must be a valid date in the format dd/mm/yyyy',
-    },
-  )
-  birthday?: string;
+  @IsOptional()
+  @IsDateString()
+  birthday?: Date;
 
   @ApiProperty({ description: 'User gender' })
   @IsBoolean()

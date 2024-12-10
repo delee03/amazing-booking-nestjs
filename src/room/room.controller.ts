@@ -14,12 +14,18 @@ import {
 import { RoomService } from './room.service';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
-import { ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiConsumes,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadRoomImgDto } from './dto/upload-room-img.dto';
 import { handleResponse } from 'src/common/handleRespsonse';
 import { handleErorr } from 'src/common/handleErorr';
 
+@ApiBearerAuth('Bearer')
 @ApiTags('rooms')
 @Controller('rooms')
 export class RoomController {

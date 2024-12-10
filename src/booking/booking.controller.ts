@@ -14,11 +14,12 @@ import {
 import { BookingService } from './booking.service';
 import { CreateBookingDto } from './dto/booking-create.dto';
 import { UpdateBookingDto } from './dto/booking-update.dto';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { PaymentService } from './payment.service';
 import { JwtAuthGuard } from 'src/auth/guards/local.guard';
 import { AuthGuard } from '@nestjs/passport';
 
+@ApiBearerAuth('Bearer')
 @Controller('booking')
 @ApiTags('booking')
 export class BookingController {

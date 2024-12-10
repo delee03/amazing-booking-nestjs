@@ -13,10 +13,16 @@ import {
 import { RoomImageService } from './room-image.service';
 import { CreateRoomImageDto } from './dto/create-room-image.dto';
 import { UpdateRoomImageDto } from './dto/update-room-image-dto';
-import { ApiOperation, ApiTags, ApiConsumes } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiTags,
+  ApiConsumes,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { handleResponse } from 'src/common/handleRespsonse';
 
+@ApiBearerAuth('Bearer')
 @ApiTags('room-images')
 @Controller('room-images')
 export class RoomImageController {

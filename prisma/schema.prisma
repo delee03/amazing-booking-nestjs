@@ -26,6 +26,8 @@ model User {
   role     Role    @default(USER)
   bookings Booking[]
   ratings  Rating[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Room {
@@ -42,6 +44,13 @@ model Room {
   bookings    Booking[]
   images      RoomImage[]
   ratings     Rating[]
+  address     String
+  status      Boolean @default(true)
+  type        String?
+  longitude   String?
+  latitude    String?
+    createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Location {
@@ -52,6 +61,8 @@ model Location {
   longitude String?
   latitude String?
   rooms Room[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model RoomImage {
@@ -86,6 +97,7 @@ model Rating {
   room     Room    @relation(fields: [roomId], references: [id])
   roomId   String   @db.ObjectId
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum Role {

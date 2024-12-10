@@ -10,9 +10,10 @@ import {
 import { RatingService } from './rating.service';
 import { CreateRatingDto } from './dto/create-rating.dto';
 import { UpdateRatingDto } from './dto/update-rating.dto';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { handleResponse } from 'src/common/handleRespsonse';
 
+@ApiBearerAuth('Bearer')
 @ApiTags('ratings')
 @Controller('ratings')
 export class RatingController {

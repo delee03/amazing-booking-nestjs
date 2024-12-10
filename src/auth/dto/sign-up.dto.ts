@@ -43,7 +43,7 @@ export class SignUpDto {
 
   @ApiProperty({ description: 'User birthday' })
   @IsDateString()
-  birthday: string;
+  birthday: Date;
 
   @ApiProperty({ description: 'User gender' })
   @IsBoolean()

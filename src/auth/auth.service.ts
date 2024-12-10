@@ -233,17 +233,18 @@ export class AuthService {
       if (!finalUser) {
         throw new AuthException('Đăng ký tài khoản thất bại!');
       }
+      return finalUser;
 
-      return {
-        id: finalUser.id,
-        email: finalUser.email,
-        name: finalUser.name,
-        phone: finalUser.phone,
-        avatar: finalUser.avatar,
-        role: finalUser.role as unknown as UserRole, // Map Role tới UserRole
-        birthday: finalUser.birthday, // Trả về định dạng dd/mm/yyyy
-        gender: finalUser.gender,
-      };
+      // return {
+      //   id: finalUser.id,
+      //   email: finalUser.email,
+      //   name: finalUser.name,
+      //   phone: finalUser.phone,
+      //   avatar: finalUser.avatar,
+      //   role: finalUser.role as unknown as UserRole, // Map Role tới UserRole
+      //   birthday: finalUser.birthday, // Trả về định dạng dd/mm/yyyy
+      //   gender: finalUser.gender,
+      // };
     } catch (error) {
       this.logger.error('Error during sign up', {
         error: error.message,
