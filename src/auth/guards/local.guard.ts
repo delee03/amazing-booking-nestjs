@@ -1,40 +1,70 @@
 import {
+  BadRequestException,
   ExecutionContext,
+  ForbiddenException,
   Injectable,
   UnauthorizedException,
-  Body,
 } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { JsonWebTokenError, JwtService, TokenExpiredError } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
-import { Observable } from 'rxjs';
+import { IS_PUBLIC_KEY } from 'src/common/decorater/public.decorater';
+import { ROLES_KEY } from 'src/common/decorater/roles.decorater';
 
 @Injectable()
-export class LocalGuard extends AuthGuard('local') {
-  async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest();
-    console.log('Inside Local Guard canActivate');
-    console.log('Request Body:', request.body);
-    console.log('Request Headers:', request.headers);
-    const result = (await super.canActivate(context)) as boolean;
-    if (!result) {
-      console.log('Local Guard canActivate result:', result);
+export class JwtAuthGuard extends AuthGuard('protected') {
+  constructor(private readonly reflector: Reflector) {
+    super();
+  }
+  canActivate(context: ExecutionContext) {
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+    if (isPublic) {
+      return true;
     }
-    return result;
+
+    return super.canActivate(context);
   }
 
-  handleRequest(err: any, user: any, info: any) {
-    console.log('LocalAuthGuard handleRequest', {
-      hasError: !!err,
-      errorMessage: err?.message,
-      hasUser: !!user,
-      info: info,
+  handleRequest(err: any, user: any, info: any, context: ExecutionContext) {
+    console.log('request');
+    console.log({
+      err,
+      user,
+      info,
     });
+    // You can throw an exception based on either "info" or "err" arguments
 
+    if (info instanceof TokenExpiredError) {
+      throw new UnauthorizedException('Token expired');
+    }
+    if (info instanceof JsonWebTokenError) {
+      throw new UnauthorizedException('Invalid token');
+    }
     if (err || !user) {
-      const message = err?.message || info?.message || 'Authentication failed';
-      console.log('Authentication failed:', message);
-      throw new UnauthorizedException(message);
+      throw new UnauthorizedException('Unauthorized');
+    }
+    // Lấy metadata từ decorator @Roles
+    const reflector = this.reflector;
+    const requiredRoles = reflector.getAllAndOverride<string[]>(ROLES_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+
+    if (requiredRoles && requiredRoles.length > 0) {
+      console.log('Required Roles:', requiredRoles);
+      console.log('User Role:', user.role);
+
+      // Kiểm tra role của user
+      if (!requiredRoles.includes(user.role)) {
+        throw new ForbiddenException(
+          'You do not have permission to perform this action',
+        );
+      }
     }
 
-    return user;
+    return user; // Trả về user nếu tất cả điều kiện hợp lệ
   }
 }

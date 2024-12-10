@@ -9,6 +9,7 @@ import { Role, User } from '@prisma/client';
 import { SignInDto } from './dto/sign-in.dto';
 import { SignUpDto, UserRole } from './dto/sign-up.dto';
 import { OAuth2Client } from 'google-auth-library';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
@@ -18,6 +19,7 @@ export class AuthService {
     private jwtService: JwtService,
     @Inject('Logger') private readonly logger: Logger,
     private prisma: PrismaService,
+    private readonly configService: ConfigService,
   ) {}
 
   async googleLogin(token: string) {
@@ -83,9 +85,9 @@ export class AuthService {
         const isPasswordValid = await bcrypt.compare(password, user.password);
         console.log('Password valid:', isPasswordValid ? 'Yes' : 'No');
 
-        if (user.role !== 'ADMIN') {
-          throw new AuthException('Tài khoản không có quyền truy cập');
-        }
+        // if (user.role !== 'ADMIN') {
+        //   throw new AuthException('Tài khoản không có quyền truy cập');
+        // }
 
         // Nếu password hợp lệ thì trả về user
         if (isPasswordValid) {
@@ -105,12 +107,14 @@ export class AuthService {
 
   async signIn(signInDto: SignInDto): Promise<{
     statusCode: number;
+    message?: string;
     content: any;
     token: string;
     dateTime: string;
   }> {
     try {
       const { email, password } = signInDto;
+      console.log(email, password);
       const user = await this.validateUser(email, password);
       if (!user) {
         // throw new AuthException('Email hoặc mật khẩu không đúng !');
@@ -144,6 +148,7 @@ export class AuthService {
         throw new AuthException('Email hoặc mật khẩu không đúng !');
       }
       const payload: JwtPayload = {
+        id: user.id,
         email: user.email,
         sub: user.id,
         role: fullUser.role,
@@ -162,10 +167,14 @@ export class AuthService {
       // });
 
       console.log('Signing in... Creating token');
-      const token = this.jwtService.sign(payload);
+      const token = this.jwtService.sign(payload, {
+        secret: this.configService.get<string>('JWT_SECRET'),
+        expiresIn: this.configService.get<string>('JWT_EXPIRATION'),
+      });
 
       return {
         statusCode: 200,
+        message: 'Đăng nhập thành công',
         content: {
           user: {
             id: user.id,
@@ -187,6 +196,7 @@ export class AuthService {
       // throw new AuthException('Email hoặc mật khẩu không đúng !');
       return {
         statusCode: 400,
+        message: 'Đăng nhập thất bại',
         content: {
           message: 'Email hoặc mật khẩu không đúng !',
         },

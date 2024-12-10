@@ -94,11 +94,11 @@ enum Role {
 }
 
 enum PaymentMethod {
-  CREDIT_CARD
+  BANK_TRANSFER
   MOMO
+  CASH
   VNPAY
   PAYPAL
-  BANK_TRANSFER
   OTHER
 }
 

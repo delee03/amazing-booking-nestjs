@@ -13,15 +13,17 @@ import { SignUpDto } from './dto/sign-up.dto';
 
 import { AuthService } from './auth.service';
 import { Request } from 'express';
-import { LocalGuard } from './guards/local.guard';
-import { JwtAuthGuard } from './guards/jwt.guard';
-import { GoogleTokenDto } from './dto/google-token.dto';
 
+import { GoogleTokenDto } from './dto/google-token.dto';
+import { ApiTags } from '@nestjs/swagger';
+import { Public } from 'src/common/decorater/public.decorater';
+
+@ApiTags('authentication')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @UseGuards(LocalGuard)
+  @Public()
   @Post('signin')
   async signIn(@Req() req: Request, @Body() signInDto: SignInDto) {
     console.log('AuthController - Login endpoint hit', {
@@ -40,27 +42,14 @@ export class AuthController {
       throw error;
     }
   }
-
+  @Public()
   @Post('signup')
   async signUp(@Body() signUpDto: SignUpDto) {
     return this.authService.signUp(signUpDto);
   }
-
+  @Public()
   @Post('google')
   async googleLogin(@Body() googleToken: GoogleTokenDto) {
     return this.authService.googleLogin(googleToken.token);
   }
-  //   @UseGuards(JwtAuthGuard)
-  //   @Get('profile')
-  //   getProfile(@Req() req: Request) {
-  //     return req.user;
-  //   }
-
-  //   @Get('status')
-  //   @UseGuards(JwtAuthGuard)
-  //   status(@Req() req: Request) {
-  //     console.log('Inside AuthController status method');
-  //     console.log(req.user);
-  //     return req.user;
-  //   }
 }

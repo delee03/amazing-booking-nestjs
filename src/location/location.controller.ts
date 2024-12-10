@@ -11,14 +11,22 @@ import {
 import { LocationService } from './location.service';
 import { CreateLocationDto } from './dto/create-location.dto';
 import { UpdateLocationDto } from './dto/update-location.dto';
-import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiTags,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { handleResponse } from 'src/common/handleRespsonse';
+import { Roles } from 'src/common/decorater/roles.decorater';
 
+@ApiBearerAuth('Bearer')
 @ApiTags('locations')
 @Controller('locations')
 export class LocationController {
   constructor(private readonly locationService: LocationService) {}
 
+  @Roles('ADMIN')
   @Post()
   @ApiOperation({ summary: 'Create a new location' })
   @ApiResponse({
@@ -53,6 +61,7 @@ export class LocationController {
     );
   }
 
+  @Roles('ADMIN')
   @Put(':id')
   @ApiOperation({ summary: 'Update Location' })
   async update(

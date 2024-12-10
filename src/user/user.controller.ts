@@ -10,6 +10,8 @@ import {
   UploadedFile,
   UseInterceptors,
   Query,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -22,10 +24,17 @@ import {
   ApiOperation,
   ApiResponse,
   ApiConsumes,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { handleResponse } from 'src/common/handleRespsonse';
+import { AuthGuard } from '@nestjs/passport';
+import { Request } from 'express';
+import { Role } from '@prisma/client';
+import { Roles } from 'src/common/decorater/roles.decorater';
 // Removed unused import for Multer
 
+// @UseGuards(AuthGuard('protected'))
+@ApiBearerAuth('Bearer')
 @ApiTags('users')
 @Controller('users')
 export class UserController {
@@ -45,7 +54,8 @@ export class UserController {
   @Get()
   @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({ status: 200, description: 'Return all users.' })
-  async findAll() {
+  async findAll(@Req() req: Request) {
+    // console.log({ authen: req.user });
     const getAllUsers = await this.userService.findAll();
     return handleResponse('Lấy tất cả user thành công', getAllUsers);
   }
@@ -61,6 +71,7 @@ export class UserController {
     return handleResponse('Lấy thông tin user thành công', getUserById);
   }
 
+  @Roles('ADMIN')
   @Put(':id')
   @ApiOperation({ summary: 'Update a user by ID' })
   @ApiResponse({
