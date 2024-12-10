@@ -64,7 +64,7 @@ export class RoomController {
       const roomById = await this.roomService.findOne(id);
       return handleResponse('Lấy phòng theo ID thành công', roomById);
     } catch (error) {
-      return handleErorr('Lấy phòng thất bại', error.statusCode, error);
+      return handleErorr('Lấy phòng thất bại', error.status, error);
     }
   }
 
@@ -123,7 +123,7 @@ export class RoomController {
       );
     } catch (error) {
       return {
-        statusCode: 500,
+        statusCode: error.status || 500,
         message: `Failed to paginate rooms: ${error.message}`,
       };
     }
@@ -140,7 +140,7 @@ export class RoomController {
       );
     } catch (error) {
       return {
-        statusCode: 500,
+        statusCode: error.status,
         message: `Failed to get rooms by location ID: ${error.message}`,
       };
     }

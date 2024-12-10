@@ -47,17 +47,31 @@ export class UserController {
     description: 'The user has been successfully created.',
   })
   async create(@Body() createUserDto: CreateUserDto) {
-    const createdUser = await this.userService.create(createUserDto);
-    return handleResponse('Tạo mới user thành công', createdUser, 201);
+    try {
+      const createdUser = await this.userService.create(createUserDto);
+      return handleResponse('Tạo mới user thành công', createdUser, 201);
+    } catch (error) {
+      return {
+        statusCode: 400,
+        message: `Failed to create user: ${error.message}`,
+      };
+    }
   }
 
   @Get()
   @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({ status: 200, description: 'Return all users.' })
   async findAll(@Req() req: Request) {
-    // console.log({ authen: req.user });
-    const getAllUsers = await this.userService.findAll();
-    return handleResponse('Lấy tất cả user thành công', getAllUsers);
+    try {
+      // console.log({ authen: req.user });
+      const getAllUsers = await this.userService.findAll();
+      return handleResponse('Lấy tất cả user thành công', getAllUsers);
+    } catch (error) {
+      return {
+        statusCode: 500,
+        message: `Failed to get all users: ${error.message}`,
+      };
+    }
   }
 
   @Get('user-by-id/:id')
@@ -67,8 +81,15 @@ export class UserController {
     description: 'Return the user with the specified ID.',
   })
   async findOne(@Param('id') id: string) {
-    const getUserById = await this.userService.findOne(id);
-    return handleResponse('Lấy thông tin user thành công', getUserById);
+    try {
+      const getUserById = await this.userService.findOne(id);
+      return handleResponse('Lấy thông tin user thành công', getUserById);
+    } catch (error) {
+      return {
+        statusCode: 500,
+        message: `Failed to get user: ${error.message}`,
+      };
+    }
   }
 
   @Roles('ADMIN')
@@ -79,8 +100,15 @@ export class UserController {
     description: 'The user has been successfully updated.',
   })
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    const updateUser = await this.userService.update(id, updateUserDto);
-    return handleResponse('Cập nhật thông tin user thành công', updateUser);
+    try {
+      const updateUser = await this.userService.update(id, updateUserDto);
+      return handleResponse('Cập nhật thông tin user thành công', updateUser);
+    } catch (error) {
+      return {
+        statusCode: 500,
+        message: `Failed to update user: ${error.message}`,
+      };
+    }
   }
 
   @Delete(':id')
@@ -90,8 +118,15 @@ export class UserController {
     description: 'The user has been successfully deleted.',
   })
   async remove(@Param('id') id: string) {
-    const deletedUser = await this.userService.remove(id);
-    return handleResponse('Xóa user thành công', deletedUser, 200);
+    try {
+      const deletedUser = await this.userService.remove(id);
+      return handleResponse('Xóa user thành công', deletedUser, 200);
+    } catch (error) {
+      return {
+        statusCode: 500,
+        message: `Failed to delete user: ${error.message}`,
+      };
+    }
   }
 
   @Post('avatar/:id')
@@ -103,12 +138,19 @@ export class UserController {
     @UploadedFile() file: Express.Multer.File,
     @Body() body: UploadAvatarDto,
   ) {
-    const updateAvatar = await this.userService.updateAvatar(id, file);
-    return handleResponse(
-      'Upload avatar cho người dùng thành công',
-      updateAvatar,
-      201,
-    );
+    try {
+      const updateAvatar = await this.userService.updateAvatar(id, file);
+      return handleResponse(
+        'Upload avatar cho người dùng thành công',
+        updateAvatar,
+        201,
+      );
+    } catch (error) {
+      return {
+        statusCode: 500,
+        message: `Failed to upload avatar: ${error.message}`,
+      };
+    }
   }
 
   @Get('user-pagination')
@@ -131,7 +173,7 @@ export class UserController {
       );
     } catch (error) {
       return {
-        statusCode: 500,
+        statusCode: error.status,
         message: `Failed to paginate users: ${error.message}`,
       };
     }

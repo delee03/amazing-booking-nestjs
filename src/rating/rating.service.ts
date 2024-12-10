@@ -24,6 +24,35 @@ export class RatingService {
     });
   }
 
+  async findAllPagination(pageIndex: number, pageTake: number) {
+    pageIndex = pageIndex < 1 ? 1 : pageIndex;
+    pageTake = pageTake < 1 ? 5 : pageTake;
+    // Tính toán giá trị skip
+
+    const skip = (pageIndex - 1) * pageTake;
+    // Lấy rooms với skip và take
+    const rooms = await this.prisma.rating.findMany({
+      skip: skip, // Bỏ qua các phần tử đã tính toán
+      take: pageTake, // Lấy số phần tử tương ứng với pageTake
+      include: {
+        user: true,
+        room: true,
+      },
+    });
+    // Tổng số  (dùng để tính số trang)
+    const totalCount = await this.prisma.room.count();
+    // Tính số trang
+    const pageCount = Math.ceil(totalCount / pageTake);
+    return {
+      statusCode: 200,
+      message: 'Danh sách đánh giá với user và room thành công',
+      content: rooms,
+      pageCurrent: pageIndex, // Trang hiện tại
+      pageCount: pageCount, // Tổng số trang
+      totalCount: totalCount, // Tổng số lượng
+    };
+  }
+
   // Lấy rating theo ID
   async findOne(id: string) {
     return this.prisma.rating.findUnique({

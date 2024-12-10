@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../Prisma/prisma.service';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
@@ -21,6 +21,8 @@ export class RoomService {
 
   // Lấy danh sách phòng với phân trang dựa trên pageIndex và pageTake
   async findAllPagination(pageIndex: number, pageTake: number) {
+    pageIndex = pageIndex < 1 ? 1 : pageIndex;
+    pageTake = pageTake < 1 ? 5 : pageTake;
     // Tính toán giá trị skip
     const skip = (pageIndex - 1) * pageTake;
     // Lấy rooms với skip và take
@@ -57,7 +59,7 @@ export class RoomService {
   //get all room by location id
   async findRoomByLocation(idLocation: string) {
     if (!idLocation) {
-      throw new Error('Location ID is required');
+      throw new BadRequestException('Location ID is required');
     }
     return await this.prisma.room.findMany({
       where: {

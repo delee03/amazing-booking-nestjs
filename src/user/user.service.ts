@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadGatewayException,
+  BadRequestException,
+  Injectable,
+} from '@nestjs/common';
 import { PrismaService } from '../Prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -22,34 +26,32 @@ export class UserService {
 
   //get user pagination with pageIndex and pageTake
   async findAllUserPagination(pageIndex: number, pageTake: number) {
-    try {
-      const skipValue = (pageIndex - 1) * pageTake;
-      // Kiểm tra giá trị skip và take
-      console.log('Skip:', skipValue, 'Take:', pageTake);
-      // Lấy users với skip và take
-      const users = await this.prisma.user.findMany({
-        skip: skipValue,
-        take: pageTake, // Lấy số phần tử tương ứng với pageTake
-        include: {
-          bookings: true,
-          ratings: true,
-        },
-      });
-      const totalUsers = await this.prisma.user.count();
-      const totalPages = Math.ceil(totalUsers / pageTake);
-      // Kiểm tra kết quả truy vấn users
-      console.log('Users:', users);
-      return {
-        statusCode: 200,
-        message: 'Danh sách người dùng đã phân trang thành công',
-        content: users,
-        pageCurrent: pageIndex,
-        pageCount: totalPages,
-        totalCount: totalUsers,
-      };
-    } catch (error) {
-      throw new Error(`Failed to paginate users: ${error.message}`);
-    }
+    pageIndex = pageIndex < 1 ? 1 : pageIndex;
+    pageTake = pageTake < 1 ? 5 : pageTake;
+    const skipValue = (pageIndex - 1) * pageTake;
+    // Kiểm tra giá trị skip và take
+    console.log('Skip:', skipValue, 'Take:', pageTake);
+    // Lấy users với skip và take
+    const users = await this.prisma.user.findMany({
+      skip: skipValue,
+      take: pageTake, // Lấy số phần tử tương ứng với pageTake
+      include: {
+        bookings: true,
+        ratings: true,
+      },
+    });
+    const totalUsers = await this.prisma.user.count();
+    const totalPages = Math.ceil(totalUsers / pageTake);
+    // Kiểm tra kết quả truy vấn users
+    console.log('Users:', users);
+    return {
+      statusCode: 200,
+      message: 'Danh sách người dùng đã phân trang thành công',
+      content: users,
+      pageCurrent: pageIndex,
+      pageCount: totalPages,
+      totalCount: totalUsers,
+    };
   }
 
   //upload avatar

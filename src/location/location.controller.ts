@@ -34,31 +34,56 @@ export class LocationController {
     description: 'The location has been successfully created.',
   })
   async create(@Body() createLocationDto: CreateLocationDto) {
-    const createdLocation =
-      await this.locationService.create(createLocationDto);
-    return handleResponse('Tạo mới địa điểm thành công', createdLocation, 201);
+    try {
+      const createdLocation =
+        await this.locationService.create(createLocationDto);
+      return handleResponse(
+        'Tạo mới địa điểm thành công',
+        createdLocation,
+        201,
+      );
+    } catch (error) {
+      return {
+        statusCode: 400,
+        message: `Failed to create location: ${error.message}`,
+      };
+    }
   }
 
   @Get()
   @ApiOperation({ summary: 'Get All Locations' })
   async findAll() {
-    const getAllLocations = await this.locationService.findAll();
-    return handleResponse(
-      'Lấy tất cả địa điểm thành công',
-      getAllLocations,
-      200,
-    );
+    try {
+      const getAllLocations = await this.locationService.findAll();
+      return handleResponse(
+        'Lấy tất cả địa điểm thành công',
+        getAllLocations,
+        200,
+      );
+    } catch (error) {
+      return {
+        statusCode: 400,
+        message: `Failed to get all locations: ${error.message}`,
+      };
+    }
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get Location By Id' })
   async findOne(@Param('id') id: string) {
-    const getLocationById = await this.locationService.findOne(id);
-    return handleResponse(
-      'Lấy địa điểm theo ID thành công',
-      getLocationById,
-      200,
-    );
+    try {
+      const getLocationById = await this.locationService.findOne(id);
+      return handleResponse(
+        'Lấy địa điểm theo ID thành công',
+        getLocationById,
+        200,
+      );
+    } catch (error) {
+      return {
+        statusCode: 400,
+        message: `Failed to get location by ID: ${error.message}`,
+      };
+    }
   }
 
   @Roles('ADMIN')
@@ -68,11 +93,18 @@ export class LocationController {
     @Param('id') id: string,
     @Body() updateLocationDto: UpdateLocationDto,
   ) {
-    const updatedLocation = await this.locationService.update(
-      id,
-      updateLocationDto,
-    );
-    return handleResponse('Cập nhật địa điểm thành công', updatedLocation);
+    try {
+      const updatedLocation = await this.locationService.update(
+        id,
+        updateLocationDto,
+      );
+      return handleResponse('Cập nhật địa điểm thành công', updatedLocation);
+    } catch (error) {
+      return {
+        statusCode: 400,
+        message: `Failed to update location: ${error.message}`,
+      };
+    }
   }
 
   @Delete(':id')
@@ -82,7 +114,14 @@ export class LocationController {
   })
   @ApiOperation({ summary: 'Remove a Location' })
   async remove(@Param('id') id: string) {
-    const deletedLocation = await this.locationService.remove(id);
-    return handleResponse('Xóa địa điểm thành công', deletedLocation);
+    try {
+      const deletedLocation = await this.locationService.remove(id);
+      return handleResponse('Xóa địa điểm thành công', deletedLocation);
+    } catch (error) {
+      return {
+        statusCode: 400,
+        message: `Failed to delete location: ${error.message}`,
+      };
+    }
   }
 }
