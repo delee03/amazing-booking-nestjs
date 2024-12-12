@@ -29,8 +29,8 @@ import {
 import { handleResponse } from 'src/common/handleRespsonse';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
-import { Role } from '@prisma/client';
 import { Roles } from 'src/common/decorater/roles.decorater';
+import { Role } from '@prisma/client';
 // Removed unused import for Multer
 
 // @UseGuards(AuthGuard('protected'))
@@ -40,6 +40,7 @@ import { Roles } from 'src/common/decorater/roles.decorater';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @Roles('ADMIN')
   @Post()
   @ApiOperation({ summary: 'Create a new user' })
   @ApiResponse({
@@ -58,6 +59,7 @@ export class UserController {
     }
   }
 
+  @Roles('ADMIN')
   @Get()
   @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({ status: 200, description: 'Return all users.' })
@@ -86,7 +88,7 @@ export class UserController {
       return handleResponse('Lấy thông tin user thành công', getUserById);
     } catch (error) {
       return {
-        statusCode: 500,
+        statusCode: 400,
         message: `Failed to get user: ${error.message}`,
       };
     }
@@ -111,6 +113,7 @@ export class UserController {
     }
   }
 
+  @Roles('ADMIN')
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a user by ID' })
   @ApiResponse({
@@ -153,6 +156,7 @@ export class UserController {
     }
   }
 
+  @Roles('ADMIN')
   @Get('user-pagination')
   @ApiOperation({ summary: 'Get all users with pagination' })
   async findAllPagination(

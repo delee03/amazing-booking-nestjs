@@ -27,6 +27,9 @@ export class BookingService {
         room: true,
         user: true,
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
     return {
       statusCode: 200,

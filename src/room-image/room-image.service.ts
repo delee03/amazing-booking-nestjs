@@ -49,7 +49,11 @@ export class RoomImageService {
 
   // Lấy tất cả RoomImages
   async findAll() {
-    return this.prisma.roomImage.findMany();
+    return this.prisma.roomImage.findMany({
+      include: {
+        room: true,
+      },
+    });
   }
 
   // Lấy RoomImage theo ID

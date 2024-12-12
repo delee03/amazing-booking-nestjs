@@ -18,6 +18,8 @@ import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { PaymentService } from './payment.service';
 import { JwtAuthGuard } from 'src/auth/guards/local.guard';
 import { AuthGuard } from '@nestjs/passport';
+import { Roles } from 'src/common/decorater/roles.decorater';
+import { Public } from 'src/common/decorater/public.decorater';
 
 @ApiBearerAuth('Bearer')
 @Controller('booking')
@@ -42,7 +44,8 @@ export class BookingController {
     }
   }
 
-  @UseGuards(AuthGuard('protected'))
+  // @UseGuards(AuthGuard('protected'))
+  @Roles('ADMIN')
   @Get()
   @ApiOperation({ summary: 'Get all bookings' })
   async findAll() {
@@ -56,6 +59,7 @@ export class BookingController {
     }
   }
 
+  @Roles('ADMIN')
   @Get('booking-pagination')
   @ApiOperation({ summary: 'Get all bookings with pagination' })
   async findAllPagination(
@@ -108,6 +112,7 @@ export class BookingController {
     }
   }
 
+  @Roles('ADMIN')
   @Put(':id')
   @ApiOperation({ summary: 'Update a booking by id' })
   async update(
@@ -124,6 +129,7 @@ export class BookingController {
     }
   }
 
+  @Roles('ADMIN')
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a booking by id' })
   async remove(@Param('id') id: string) {

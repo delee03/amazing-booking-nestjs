@@ -21,6 +21,9 @@ export class RatingService {
         user: true,
         room: true,
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
   }
 

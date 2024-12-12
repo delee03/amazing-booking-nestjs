@@ -13,6 +13,9 @@ import { CreateRatingDto } from './dto/create-rating.dto';
 import { UpdateRatingDto } from './dto/update-rating.dto';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { handleResponse } from 'src/common/handleRespsonse';
+import { Roles } from 'src/common/decorater/roles.decorater';
+import { Public } from 'src/common/decorater/public.decorater';
+import { Role } from '@prisma/client';
 
 @ApiBearerAuth('Bearer')
 @ApiTags('ratings')
@@ -20,6 +23,7 @@ import { handleResponse } from 'src/common/handleRespsonse';
 export class RatingController {
   constructor(private readonly ratingService: RatingService) {}
 
+  //mặc định sẽ bị private cần auth mới tạo mới được
   @Post()
   @ApiOperation({ summary: 'Create a new rating' })
   async create(@Body() createRatingDto: CreateRatingDto) {
@@ -38,12 +42,15 @@ export class RatingController {
     }
   }
 
+  @Roles('ADMIN')
   @Get()
   @ApiOperation({ summary: 'Get all ratings' })
   async findAll() {
     const allRatings = await this.ratingService.findAll();
     return handleResponse('Lấy tất cả ratings thành công', allRatings);
   }
+
+  @Roles('ADMIN')
   @Get('rating-pagination')
   @ApiOperation({ summary: 'Get all ratings with user & room successfully' })
   async findAllPagination(
@@ -70,6 +77,7 @@ export class RatingController {
     }
   }
 
+  @Public()
   @Get(':id')
   @ApiOperation({ summary: 'Get rating by ID' })
   async findOne(@Param('id') id: string) {
@@ -84,6 +92,7 @@ export class RatingController {
     }
   }
 
+  @Roles('ADMIN')
   @Patch(':id')
   @ApiOperation({ summary: 'Update rating by ID' })
   async update(
@@ -96,7 +105,7 @@ export class RatingController {
         updateRatingDto,
       );
       return handleResponse(
-        'Cập nhật dữ liệu ratingId thành công',
+        'Cập nhật dữ liệu đánh giá thành công',
         updatedRatingById,
       );
     } catch (error) {
@@ -107,6 +116,7 @@ export class RatingController {
     }
   }
 
+  @Roles('ADMIN')
   @Delete(':id')
   @ApiOperation({ summary: 'Delete rating by ID' })
   async remove(@Param('id') id: string) {
@@ -121,6 +131,7 @@ export class RatingController {
     }
   }
 
+  @Public()
   // Lấy tất cả ratings theo roomId
   @Get('/room/:roomId')
   @ApiOperation({ summary: 'Get all ratings by room ID' })

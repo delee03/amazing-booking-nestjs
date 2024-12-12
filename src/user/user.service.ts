@@ -83,7 +83,15 @@ export class UserService {
 
   // Lấy danh sách tất cả người dùng
   async findAll() {
-    return await this.prisma.user.findMany();
+    return await this.prisma.user.findMany({
+      include: {
+        bookings: true,
+        ratings: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
   }
   // Lấy thông tin một người dùng bằng ID
   async findOne(id: string) {

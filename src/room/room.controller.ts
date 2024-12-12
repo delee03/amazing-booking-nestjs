@@ -24,6 +24,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadRoomImgDto } from './dto/upload-room-img.dto';
 import { handleResponse } from 'src/common/handleRespsonse';
 import { handleErorr } from 'src/common/handleErorr';
+import { Roles } from 'src/common/decorater/roles.decorater';
+import { Public } from 'src/common/decorater/public.decorater';
 
 @ApiBearerAuth('Bearer')
 @ApiTags('rooms')
@@ -31,6 +33,7 @@ import { handleErorr } from 'src/common/handleErorr';
 export class RoomController {
   constructor(private readonly roomService: RoomService) {}
 
+  @Roles('ADMIN')
   @Post()
   @ApiOperation({ summary: 'Create a new room' })
   async create(@Body() createRoomDto: CreateRoomDto) {
@@ -42,6 +45,7 @@ export class RoomController {
     }
   }
 
+  @Public()
   @Get()
   @ApiOperation({ summary: 'Get all rooms' })
   async findAll() {
@@ -57,6 +61,7 @@ export class RoomController {
     }
   }
 
+  @Public()
   @Get('room-by-id/:id')
   @ApiOperation({ summary: 'Get room by ID' })
   async findOne(@Param('id') id: string) {
@@ -68,6 +73,7 @@ export class RoomController {
     }
   }
 
+  @Roles('ADMIN')
   @Put(':id')
   @ApiOperation({ summary: 'Update room by ID' })
   async update(@Param('id') id: string, @Body() updateRoomDto: UpdateRoomDto) {
@@ -79,6 +85,7 @@ export class RoomController {
     }
   }
 
+  @Roles('ADMIN')
   @Delete(':id')
   @ApiOperation({ summary: 'Delete room by ID' })
   async remove(@Param('id') id: string) {
@@ -86,6 +93,7 @@ export class RoomController {
     return handleResponse('Xóa phòng thành công', deletedRoom);
   }
 
+  @Roles('ADMIN')
   @Post('avatar/:id')
   @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Upload room avatar' })
@@ -103,6 +111,7 @@ export class RoomController {
     }
   }
 
+  @Public()
   @Get('room-pagination')
   @ApiOperation({ summary: 'Get all rooms with pagination' })
   async findAllPagination(
@@ -129,6 +138,7 @@ export class RoomController {
     }
   }
 
+  @Public()
   @Get('room-by-location/:id')
   @ApiOperation({ summary: 'Get all rooms by location ID' })
   async findRoomByLocation(@Param('id') id: string) {

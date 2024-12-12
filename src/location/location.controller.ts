@@ -20,6 +20,7 @@ import {
 } from '@nestjs/swagger';
 import { handleResponse } from 'src/common/handleRespsonse';
 import { Roles } from 'src/common/decorater/roles.decorater';
+import { Public } from 'src/common/decorater/public.decorater';
 
 @ApiBearerAuth('Bearer')
 @ApiTags('locations')
@@ -51,6 +52,7 @@ export class LocationController {
     }
   }
 
+  @Public()
   @Get()
   @ApiOperation({ summary: 'Get All Locations' })
   async findAll() {
@@ -69,6 +71,7 @@ export class LocationController {
     }
   }
 
+  @Roles('ADMIN')
   @Get('location-pagination')
   @ApiOperation({ summary: 'Get all locations with pagination' })
   async findAllPagination(
@@ -92,6 +95,7 @@ export class LocationController {
     }
   }
 
+  @Public()
   @Get(':id')
   @ApiOperation({ summary: 'Get Location By Id' })
   async findOne(@Param('id') id: string) {
@@ -131,6 +135,7 @@ export class LocationController {
     }
   }
 
+  @Roles('ADMIN')
   @Delete(':id')
   @ApiResponse({
     status: 201,

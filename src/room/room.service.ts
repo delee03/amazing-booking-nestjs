@@ -73,7 +73,17 @@ export class RoomService {
 
   // Lấy danh sách tất cả các room
   async findAll() {
-    return await this.prisma.room.findMany();
+    return await this.prisma.room.findMany({
+      include: {
+        location: true,
+        bookings: true,
+        images: true,
+        ratings: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
   }
 
   // Lấy thông tin room theo ID

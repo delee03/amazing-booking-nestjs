@@ -21,13 +21,17 @@ import {
 } from '@nestjs/swagger';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { handleResponse } from 'src/common/handleRespsonse';
+import { Roles } from 'src/common/decorater/roles.decorater';
+import { Public } from 'src/common/decorater/public.decorater';
 
 @ApiBearerAuth('Bearer')
 @ApiTags('room-images')
 @Controller('room-images')
 export class RoomImageController {
   constructor(private readonly roomImageService: RoomImageService) {}
+
   // Tạo RoomImage mới và upload file
+  @Roles('ADMIN')
   @Post()
   @ApiOperation({ summary: 'Upload images for room' })
   @ApiConsumes('multipart/form-data') // Xác định kiểu dữ liệu là multipart/form-data
@@ -49,6 +53,8 @@ export class RoomImageController {
       };
     }
   }
+
+  @Public()
   @Get()
   @ApiOperation({ summary: 'Get all room images' })
   async findAll() {
@@ -63,6 +69,7 @@ export class RoomImageController {
     }
   }
 
+  @Public()
   @Get(':id')
   @ApiOperation({ summary: 'Get room image by ID' })
   async findOne(@Param('id') id: string) {
@@ -77,6 +84,7 @@ export class RoomImageController {
     }
   }
 
+  @Roles('ADMIN')
   @Patch(':id')
   @ApiOperation({ summary: 'Update room image by ID' })
   async update(
@@ -97,6 +105,7 @@ export class RoomImageController {
     }
   }
 
+  @Roles('ADMIN')
   @Delete(':id')
   @ApiOperation({ summary: 'Delete room image by ID' })
   async remove(@Param('id') id: string) {
@@ -111,6 +120,7 @@ export class RoomImageController {
     }
   }
 
+  @Public()
   @Get('/room/:roomId')
   @ApiOperation({ summary: 'Get all room images by room ID' })
   async findAllByRoomId(@Param('roomId') roomId: string) {

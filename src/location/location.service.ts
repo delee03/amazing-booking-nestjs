@@ -16,7 +16,11 @@ export class LocationService {
 
   // Lấy danh sách tất cả locations
   async findAll() {
-    return await this.prisma.location.findMany();
+    return await this.prisma.location.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
   }
 
   // Lấy danh sách locations với phân trang
