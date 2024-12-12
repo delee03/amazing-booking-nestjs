@@ -41,22 +41,25 @@ export class BookingService {
     pageTake = pageTake < 1 ? 5 : pageTake;
     const skip = (pageIndex - 1) * pageTake;
     // Lấy rooms với skip và take
-    const rooms = await this.prisma.booking.findMany({
+    const bookings = await this.prisma.booking.findMany({
       skip: skip, // Bỏ qua các phần tử đã tính toán
       take: pageTake, // Lấy số phần tử tương ứng với pageTake
       include: {
         user: true,
         room: true,
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
     // Tổng số booking (dùng để tính số trang)
-    const totalCount = await this.prisma.room.count();
+    const totalCount = await this.prisma.booking.count();
     // Tính số trang
     const pageCount = Math.ceil(totalCount / pageTake);
     return {
       statusCode: 200,
       message: 'Danh sách đặt phòng đã phân trang thành công',
-      content: rooms,
+      content: bookings,
       pageCurrent: pageIndex, // Trang hiện tại
       pageCount: pageCount, // Tổng số trang
       totalCount: totalCount, // Tổng số lượng đặt phòng

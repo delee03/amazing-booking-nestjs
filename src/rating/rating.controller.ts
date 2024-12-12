@@ -64,7 +64,7 @@ export class RatingController {
       );
     } catch (error) {
       return {
-        statusCode: 500,
+        statusCode: 400,
         message: `Failed to paginate ratings: ${error.message}`,
       };
     }

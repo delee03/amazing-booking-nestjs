@@ -35,6 +35,9 @@ export class RoomService {
         images: true,
         ratings: true,
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
     // Tổng số phòng (dùng để tính số trang)
     const totalCount = await this.prisma.room.count();

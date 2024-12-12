@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Put,
+  Query,
 } from '@nestjs/common';
 import { LocationService } from './location.service';
 import { CreateLocationDto } from './dto/create-location.dto';
@@ -64,6 +65,29 @@ export class LocationController {
       return {
         statusCode: 400,
         message: `Failed to get all locations: ${error.message}`,
+      };
+    }
+  }
+
+  @Get('location-pagination')
+  @ApiOperation({ summary: 'Get all locations with pagination' })
+  async findAllPagination(
+    @Query('pageIndex') pageIndex: string,
+    @Query('pageTake') pageTake: string,
+  ) {
+    try {
+      const pageIndexNumber = isNaN(parseInt(pageIndex))
+        ? 1
+        : parseInt(pageIndex);
+      const pageTakeNumber = isNaN(parseInt(pageTake)) ? 5 : parseInt(pageTake);
+      return await this.locationService.findAllPagination(
+        pageIndexNumber,
+        pageTakeNumber,
+      );
+    } catch (error) {
+      return {
+        statusCode: 400,
+        message: `Failed to paginate locations: ${error.message}`,
       };
     }
   }

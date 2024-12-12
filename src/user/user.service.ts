@@ -39,6 +39,9 @@ export class UserService {
         bookings: true,
         ratings: true,
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
     const totalUsers = await this.prisma.user.count();
     const totalPages = Math.ceil(totalUsers / pageTake);
