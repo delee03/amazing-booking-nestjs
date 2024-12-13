@@ -11,7 +11,7 @@ export class AuthException extends HttpException {
     super(
       {
         statusCode: HttpStatus.BAD_REQUEST,
-        message: 'Yêu cầu không hợp lệ!',
+        message: message,
         content: message,
         dateTime: new Date().toISOString(),
       },

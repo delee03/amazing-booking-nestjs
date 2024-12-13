@@ -94,7 +94,6 @@ export class UserController {
     }
   }
 
-  @Roles('ADMIN')
   @Put(':id')
   @ApiOperation({ summary: 'Update a user by ID' })
   @ApiResponse({
