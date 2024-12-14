@@ -44,7 +44,7 @@ async function bootstrap() {
       {
         type: 'http',
         scheme: 'bearer',
-        bearerFormat: 'JWT',
+        bearerFormat: 'JWT', 
       },
       'Bearer',
     ) // Thêm Bearer Token Authorization vào Swagger

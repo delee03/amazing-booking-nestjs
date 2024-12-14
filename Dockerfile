@@ -5,7 +5,7 @@ FROM node:22.9.0
 WORKDIR /app
 
 # Sao chép file package.json và package-lock.json để cài đặt dependencies
-COPY package.json package-lock.json ./
+COPY package*.json ./  
 
 # Cài đặt dependencies
 RUN npm install
