@@ -1,0 +1,29 @@
+name: Backend CI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Log in to Amazon ECR
+      - name: Log in to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
+
+      # Step 3: Build and Push Docker Image
+      - name: Build and Push Docker Image to ECR
+        run: |
+          echo "Building Docker Image..."
+          docker build -t backend:latest .
+          echo "Tagging Docker Image..."
+          docker tag backend:latest 171895670589.dkr.ecr.ap-southeast-1.amazonaws.com/backend:latest
+          echo "Pushing Docker Image to ECR..."
+          docker push 171895670589.dkr.ecr.ap-southeast-1.amazonaws.com/backend:latest

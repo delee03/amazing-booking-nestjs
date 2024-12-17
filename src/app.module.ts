@@ -12,6 +12,7 @@ import { AuthModule } from './auth/auth.module';
 import { BookingModule } from './booking/booking.module';
 import { RatingModule } from './rating/rating.module';
 import { ConfigModule } from '@nestjs/config';
+import { HealthController } from './health.controller';
 @Module({
   imports: [
     UserModule,
@@ -22,14 +23,14 @@ import { ConfigModule } from '@nestjs/config';
     BookingModule,
     RatingModule,
     ConfigModule.forRoot({
-      isGlobal: true, 
+      isGlobal: true,
     }),
     // Để ConfigModule sử dụng được ở mọi nơi trong ứng dụng
     // MulterModule.register({
     //   dest: './uploads', // Thư mục tạm trước khi upload lên DigitalOcean
     // }),
   ],
-  controllers: [AppController],
+  controllers: [AppController, HealthController],
   providers: [PrismaService, AppService],
   exports: [PrismaService],
 })

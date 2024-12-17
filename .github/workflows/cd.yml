@@ -1,0 +1,32 @@
+name: Backend CD
+
+on:
+  workflow_run:
+    workflows:
+      - Backend CI
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the code (to fetch the latest task definition file if needed)
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Create ECS Task Definition
+      - name: Create ECS Task Definition
+        id: task-def
+        run: |
+          echo "Updating ECS Task Definition..."
+          jq '.containerDefinitions[0].image = "171895670589.dkr.ecr.ap-southeast-1.amazonaws.com/backend:latest"' backend-task.json > backend-task-updated.json
+
+      # Step 3: Deploy to ECS
+      - name: Deploy to Amazon ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          cluster: booking-cluster
+          service: backend-service
+          task-definition: backend-task-updated.json
