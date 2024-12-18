@@ -3,8 +3,8 @@
 /node_modules
 /build
 
-backend-task.json
-frontend-task.json
+
+
 updated-secrets.json
 
 # Logs

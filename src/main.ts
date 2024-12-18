@@ -44,11 +44,13 @@ async function bootstrap() {
       {
         type: 'http',
         scheme: 'bearer',
-        bearerFormat: 'JWT', 
+        bearerFormat: 'JWT',
       },
       'Bearer',
     ) // Thêm Bearer Token Authorization vào Swagger
     .build();
+
+  app.setGlobalPrefix('api'); // Đặt tiền tố cho tất cả các API
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document); // Đường dẫn để truy cập Swagger: /api

@@ -1,0 +1,89 @@
+{
+  "family": "backend-task",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "1024",
+
+  "memory": "2048",
+  "executionRoleArn": "arn:aws:iam::171895670589:role/LabITGotTalentFor_ECS_ROLE",
+  "containerDefinitions": [
+    {
+      "name": "amazing-be",
+      "image": "171895670589.dkr.ecr.ap-southeast-1.amazonaws.com/amazing-be:latest",
+
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 3000,
+          "protocol": "tcp"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/backend-service",
+          "awslogs-region": "ap-southeast-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "secrets": [
+        {
+          "name": "MONGODB_URL",
+          "valueFrom": "arn:aws:secretsmanager:ap-southeast-1:171895670589:secret:booking-app-secrets:MONGODB_URL::"
+        },
+        {
+          "name": "DO_SPACES_ACCESS_KEY",
+          "valueFrom": "arn:aws:secretsmanager:ap-southeast-1:171895670589:secret:booking-app-secrets:DO_SPACE_ACCESS_KEY::"
+        },
+        {
+          "name": "DO_SPACE_SECRET_KEY",
+          "valueFrom": "arn:aws:secretsmanager:ap-southeast-1:171895670589:secret:booking-app-secrets:DO_SPACE_SECRET_KEY::"
+        },
+        {
+          "name": "JWT_SECRET",
+          "valueFrom": "arn:aws:secretsmanager:ap-southeast-1:171895670589:secret:booking-app-secrets:JWT_SECRET::"
+        },
+        {
+          "name": "JWT_EXPIRATION",
+          "valueFrom": "arn:aws:secretsmanager:ap-southeast-1:171895670589:secret:booking-app-secrets:JWT_EXPIRATION::"
+        },
+        {
+          "name": "GOOGLE_CLIENT_ID",
+          "valueFrom": "arn:aws:secretsmanager:ap-southeast-1:171895670589:secret:booking-app-secrets:GOOGLE_CLIENT_ID::"
+        },
+        {
+          "name": "VNPAY_HASH_SECRET",
+          "valueFrom": "arn:aws:secretsmanager:ap-southeast-1:171895670589:secret:booking-app-secrets:VNPAY_HASH_SECRET::"
+        },
+        {
+          "name": "VNPAY_TMN_CODE",
+          "valueFrom": "arn:aws:secretsmanager:ap-southeast-1:171895670589:secret:booking-app-secrets:VNPAY_TMN_CODE::"
+        },
+        {
+          "name": "VNPAY_URL",
+          "valueFrom": "arn:aws:secretsmanager:ap-southeast-1:171895670589:secret:booking-app-secrets:VNPAY_URL::"
+        },
+        {
+          "name": "VNPAY_RETURN_URL",
+          "valueFrom": "arn:aws:secretsmanager:ap-southeast-1:171895670589:secret:booking-app-secrets:VNPAY_RETURN_URL::"
+        },
+        {
+          "name": "VNPAY_VERSION",
+          "valueFrom": "arn:aws:secretsmanager:ap-southeast-1:171895670589:secret:booking-app-secrets:VNPAY_VERSION::"
+        },
+        {
+          "name": "VNPAY_COMMAND",
+          "valueFrom": "arn:aws:secretsmanager:ap-southeast-1:171895670589:secret:booking-app-secrets:VNPAY_COMMAND::"
+        },
+        {
+          "name": "VNPAY_CURR_CODE",
+          "valueFrom": "arn:aws:secretsmanager:ap-southeast-1:171895670589:secret:booking-app-secrets:VNPAY_CURR_CODE::"
+        },
+        {
+          "name": "VNPAY_LOCALE",
+          "valueFrom": "arn:aws:secretsmanager:ap-southeast-1:171895670589:secret:booking-app-secrets:VNPAY_LOCALE::"
+        }
+      ]
+    }
+  ]
+}

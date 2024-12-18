@@ -1,0 +1,39 @@
+name: CI/CD Pipeline for Backend
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout code từ GitHub
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 2. Cấu hình AWS CLI
+      - name: Configure AWS CLI
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-southeast-1
+
+      # 3. Build Docker Image
+      - name: Build Backend Docker Image
+        run: |
+          docker build -t amazing-be:latest  .
+      # 4. Push Docker Image lên Amazon ECR
+      - name: Push Backend Image to ECR
+        run: |
+          aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin 171895670589.dkr.ecr.ap-southeast-1.amazonaws.com
+          docker tag amazing-be:latest 171895670589.dkr.ecr.ap-southeast-1.amazonaws.com/amazing-be:latest
+          docker push 171895670589.dkr.ecr.ap-southeast-1.amazonaws.com/amazing-be:latest
+
+      # 5. Update ECS Service
+      - name: Update ECS Service
+        run: |
+          aws ecs update-service --cluster booking-cluster --service backend-service --force-new-deployment
