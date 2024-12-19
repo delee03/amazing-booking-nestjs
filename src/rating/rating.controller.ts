@@ -116,7 +116,6 @@ export class RatingController {
     }
   }
 
-  @Roles('ADMIN')
   @Delete(':id')
   @ApiOperation({ summary: 'Delete rating by ID' })
   async remove(@Param('id') id: string) {

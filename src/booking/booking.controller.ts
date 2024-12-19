@@ -80,7 +80,7 @@ export class BookingController {
       );
     } catch (error) {
       return {
-        statusCode: 500,
+        statusCode: 400,
         message: `Failed to paginate booking: ${error.message}`,
       };
     }
@@ -129,7 +129,6 @@ export class BookingController {
     }
   }
 
-  @Roles('ADMIN')
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a booking by id' })
   async remove(@Param('id') id: string) {

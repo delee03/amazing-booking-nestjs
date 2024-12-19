@@ -41,6 +41,12 @@ export class RoomImageController {
     @UploadedFiles() files: Array<Express.Multer.File>,
   ) {
     try {
+      if (!files) {
+        return {
+          statusCode: 400,
+          message: 'Please upload at least one image',
+        };
+      }
       const createImage = await this.roomImageService.uploadMultipleImages(
         createRoomImageDto.roomId,
         files,
@@ -125,6 +131,12 @@ export class RoomImageController {
   @ApiOperation({ summary: 'Get all room images by room ID' })
   async findAllByRoomId(@Param('roomId') roomId: string) {
     try {
+      if (!roomId) {
+        return {
+          statusCode: 400,
+          message: 'Please provide room id',
+        };
+      }
       const ImageByRoomId = await this.roomImageService.findAllByRoomId(roomId);
       return handleResponse(
         'Lấy ảnh theo phòng thành công',
