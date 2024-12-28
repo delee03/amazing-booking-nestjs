@@ -37,7 +37,7 @@ export class RoomImageService {
           },
         });
       } catch (err) {
-        throw new Error(`Failed to upload room image: ${err.message}`);
+        console.error(`Failed to upload room image: ${err.message}`);
       }
     }
 
