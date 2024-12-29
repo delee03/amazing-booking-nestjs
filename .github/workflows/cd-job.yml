@@ -1,38 +1,51 @@
-# #Mô tả công việc continuous deployment
-# name: CD_DOCKER
+# Mô tả công việc continuous deployment
+name: CD_DOCKER
 
-# #chạy khi nào
-# on:
-#   workflow_run:
-#     workflows: ["CI_DOCKER"]
-#     types:
-#       - completed
+# Chạy khi nào
+on:
+  workflow_run:
+    workflows: ['CI_DOCKER']
+    types:
+      - completed
 
-# #chạy công việc gì
-# jobs:
-#   deploy:
-#     runs-on: ubuntu-latest
+# Chạy công việc gì
+jobs:
+  deploy:
+    runs-on: speciality-runner
 
-#     steps:
-#       - name: Xóa file .env cũ
-#         run: sudo rm -f .env
+    steps:
+      - name: Xóa file .env cũ
+        run: rm -f .env
 
-#       - name: Tạo file .env mới
-#         run: echo MONGODB_URL=${{secrets.MONGODB_URL}} >> .env
-#         run: echo DO_SPACE_ACCESS_KEY=${{secrets.DO_SPACE_ACCESS_KEY}} >> .env
-#         run: echo DO_SPACE_SECRET_KEY=${{secrets.DO_SPACE_SECRET_KEY}} >> .env
-#         run: echo JWT_SECRET=${{secrets.JWT_SECRET}} >> .env
-#         run: echo JWT_EXPIRATION=${{secrets.JWT_EXPIRATION}} >> .env
-#         run: echo GOOGLE_CLIENT_ID=${{secrets.GOOGLE_CLIENT_ID}} >> .env
+      - name: Tạo file .env mới
+        run: |
+          echo MONGODB_URL=${{secrets.MONGODB_URL}} >> .env
+          echo DO_SPACE_ACCESS_KEY=${{secrets.DO_SPACE_ACCESS_KEY}} >> .env
+          echo DO_SPACE_SECRET_KEY=${{secrets.DO_SPACE_SECRET_KEY}} >> .env
+          echo JWT_SECRET=${{secrets.JWT_SECRET}} >> .env
+          echo JWT_EXPIRATION=${{secrets.JWT_EXPIRATION}} >> .env
+          echo GOOGLE_CLIENT_ID=${{secrets.GOOGLE_CLIENT_ID}} >> .env
 
-#       - name: Dừng và xóa container cũ
-#         run: sudo docker stop nestjs-app || true && sudo docker rm nestjs-app || true
+      - name: Dừng và xóa container cũ
+        run: |
+          if [ $(docker ps -q -f name=nestjs-app) ]; then
+            docker stop nestjs-app && docker rm nestjs-app;
+          fi
 
-#       - name: Xóa image cũ
-#         run: sudo docker rmi fuderrpham/nestjs-app:latest || true
+      - name: Xóa image cũ
+        run: |
+          if docker images | grep -q "fuderrpham/nestjs-app"; then
+            docker rmi fuderrpham/nestjs-app:latest;
+          fi
 
-#       - name: Pull image mới về server
-#         run: docker pull fuderrpham/nestjs-app:latest
+      - name: Pull image mới về server
+        run: |
+          if docker pull fuderrpham/nestjs-app:latest; then
+            echo "Image pulled successfully";
+          else
+            echo "Failed to pull image" && exit 1;
+          fi
 
-#       - name: Run container mới
-#         run: docker run -d -p 80:3000 --env-file .env --name nestjs-app fuderrpham/nestjs-app:latest
+      - name: Run container mới
+        run: |
+          docker run -d -p 80:3000 --env-file .env --restart always --name nestjs-app fuderrpham/nestjs-app:latest
