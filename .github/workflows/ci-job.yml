@@ -1,0 +1,24 @@
+#name of ci
+name: CI_DOCKER
+
+#chạy khi nào
+on:
+  push:
+    branches: ['main']
+
+#chạy công việc gì
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Đăng nhập vào Docker
+        run: docker login -u fuderrpham -p ${{secrets.DOCKER_TOKEN}}
+
+      - name: Build Image docker
+        run: docker build -t fuderrpham/nestjs-app:latest .
+
+      - name: Push to Docker Hub
+        run: docker push fuderrpham/nestjs-app:latest
