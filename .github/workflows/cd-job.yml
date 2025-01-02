@@ -50,4 +50,4 @@ jobs:
 
       - name: Run container mới
         run: |
-          docker run -d -p 80:3000 --env-file .env --restart always --name nestjs-app fuderrpham/nestjs-app:latest
+          docker run -d -p 3000:3000 --env-file .env --restart always --name nestjs-app fuderrpham/nestjs-app:latest
